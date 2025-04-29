@@ -7,17 +7,32 @@ une matrice pour la concentration en sucre + une matrice pour le nombre de bacte
 Déplacement = Csucre * 0.25
 
 """""" CODE """"""
-matrice concentration en sucre
-matrice des bactéries
+****matrice concentration en sucre --> le sucre arrive par la case du milieu (constante d'arrivée)
+	LE sucre se diffuse selon le gradient
+	formule = Ci*((1-Cd)/4)
+	
+****matrice des bactéries
+	position de départ soit aléatoire (probabilité d'apparition pour chaque case) soit cluster
+	déplacement à gérer plus tard
 
-class des bactéries ==>
+
+****Liste constantes : 
+concentration sucre initiale
+nombre de bactéries
+death rate
+mitosis rate
+eat rate
+
+
+****class des bactéries ==>
 	nombre de mitose avant mort
 	threshold de mitose
 	qté de sucre bouffé par les bactéries ==> peut etre gradient de la capacité de bouffe de sucre par les bactéries.
 	Nombres de vie (nombre de fois d'affilé ou la bactérie peut ne pas manger assez de sucre)
 	bacteries.update : fonction qui update l'etat de la bacterie
+	déplacement aléatoire impacté par la qtité de sucre
 	
-A chaque iteration (temps qui avance) ==>
+****A chaque iteration (temps qui avance) ==>
 	une fonction qui gère :la repartition du sucre dans l'espace au fil du temps
 	une fonction qui gère :la conso de sucre par les Bacteries
 	une fonction qui gère :le deplacement des bactéries
