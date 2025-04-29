@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import random
 
-k1 = 1 # Coefficient de diffusion
+
 m_taille = 50 # Taille de la matrice
 add_glucose = 10 # nb d'itérations avant l'ajout de glucose
 
