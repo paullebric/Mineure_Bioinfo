@@ -10,12 +10,26 @@ Déplacement = Csucre * 0.25
 ****matrice concentration en sucre --> le sucre arrive par la case du milieu (constante d'arrivée)
 	LE sucre se diffuse selon le gradient
 	formule = k1(Cd-Ca)*((1-Cd)/4) avec Cd concentration de la case qu'on regarde et Ca concentration de la case d'arrivé
+	Rajouter des entrées de glucose
+	coefficients différents sur x et y pour faire une ellispe 
+	2 types de grille (homogène et hétérogène)
+
 	
 ****matrice des bactéries
 	position de départ soit aléatoire (probabilité d'apparition pour chaque case) soit cluster
+	--> on génère des bactéries au hasard
 	déplacement à gérer plus tard
-
-
+	Est-ce que on gère les bactéries une par une (si oui comment on gère leur position et comment on l'affiche) 
+	---> on va faire bactéries = points
+	Est-ce que on choisit une approche ou est-ce qu'on les combine 
+	--> on fait selon chemotaxie pour l'instant
+	--> Formule déplacement : x(t+1) = x(t)+(l*Fx)*r	
+		x(t), la position
+		l, une constante
+		Fx, le gradient de sucre 
+			Fx = pos_case*(Cd-Cg)
+		r, un random 
+	--> Même formule pour y
 ****Liste constantes : 
 concentration sucre initiale
 nombre de bactéries

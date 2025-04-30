@@ -34,10 +34,10 @@ def afficher_matrice(mat, titre=""):
 #update la matrice de sucre en le diffusant dans les cases voisines en fonction du gradient de concentration
 def update_sucre(old_mat):
     new_mat = np.copy(old_mat)
-    D = 0.1  # coefficient de diffusion
+    D = 0.15  # coefficient de diffusion
 
-    for i in range(1, m_taille - 1):
-        for j in range(1, m_taille - 1):
+    for i in range(m_taille ):
+        for j in range(m_taille):
             for di, dj in [(-1,0), (1,0), (0,-1), (0,1)]:
                 ni, nj = i + di, j + dj
                 gradient = old_mat[ni][nj] - old_mat[i][j]
