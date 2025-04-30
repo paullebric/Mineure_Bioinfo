@@ -27,19 +27,24 @@ class Bacteria:
         index_casey = int(m_taille * self.posy)
         # ratio_casex = m_taille * self.posx - index_casex
         # ratio_casey = m_taille * self.posy - index_casey
-    
-        if 0 <= index_casex-1 < m_taille and 0 <= index_casex+1 < m_taille:
-            if 0 <= index_casey-1 < m_taille and 0 <= index_casey+1 < m_taille:
-                gradientx = matrice[index_casex+1][index_casey] - matrice[index_casex-1][index_casey]
-                gradienty = matrice[index_casex][index_casey+1] - matrice[index_casex][index_casey-1]
-                gradn = np.sqrt(gradientx**2 + gradienty**2)
-                if gradn == 0:
-                    gradn = 1e-10
-                delta_gradientx = gradientx/gradn
-                delta_gradienty = gradienty/gradn
-                if hyposthese1:
-                    self.posx = self.posx + lambda1 * delta_gradientx+lambda2 * random.uniform(-1, 1)
-                    self.posy = self.posy + lambda1 * delta_gradienty+lambda2 * random.uniform(-1, 1)
+        index_casedroite = index_casex + 1
+        index_casegauche = index_casex - 1
+        index_casehaut = index_casey + 1
+        index_casebas = index_casey - 1
+        if index_casegauche <0: index_casex = m_taille-1
+        if index_casebas <0: index_casey = m_taille-1
+        if index_casehaut >= m_taille: index_casehaut = 0
+        if index_casedroite >= m_taille: index_casedroite = 0            
+        gradientx = matrice[index_casedroite][index_casey] - matrice[index_casegauche][index_casey]
+        gradienty = matrice[index_casex][index_casehaut] - matrice[index_casex][index_casebas]
+        gradn = np.sqrt(gradientx**2 + gradienty**2)
+        if gradn == 0:
+            gradn = 1e-10
+        delta_gradientx = gradientx/gradn
+        delta_gradienty = gradienty/gradn
+        if hyposthese1:
+            self.posx = self.posx + lambda1 * delta_gradientx+lambda2 * random.uniform(-1, 1)
+            self.posy = self.posy + lambda1 * delta_gradienty+lambda2 * random.uniform(-1, 1)
 
         self.posmatx = int(m_taille * self.posx)
         self.posmaty = int(m_taille * self.posy)
