@@ -10,7 +10,7 @@ list_b = [Bacteria(random.uniform(0, 1), random.uniform(0, 1)) for _ in range(10
 
 # Animation setup
 fig, ax = plt.subplots()
-im = ax.imshow(mat, cmap='turbo', vmin=0, vmax=1)
+im = ax.imshow(mat, cmap='turbo', vmin=0, vmax=1, extent=[0, m_taille, 0, m_taille], origin='lower')
 plt.colorbar(im, ax=ax)
 title = ax.set_title("Diffusion de sucre")
 
@@ -36,9 +36,6 @@ def update(frame):
 
 ani = animation.FuncAnimation(fig, update, frames=10000, interval=1, blit=True)
 plt.show()
-
-
-
 
 
 

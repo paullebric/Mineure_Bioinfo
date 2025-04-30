@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import random
-lambdaa = 0.1
+lambdaa = 0.01
 class Bacteria:
     def __init__(self, b_posx,b_posy):
         self.nom = 'E.coli'
@@ -23,10 +23,10 @@ class Bacteria:
         ratio_casey = m_taille * self.posy - index_casey
         if 0 <= index_casex-1 < m_taille and 0 <= index_casex+1 < m_taille:
             gradientx = matrice[index_casex+1][index_casey] - matrice[index_casex-1][index_casey]
-            self.posx = self.posx + (lambdaa * ratio_casex * gradientx)
+            self.posx = self.posx + (lambdaa * gradientx)
         if 0 <= index_casey-1 < m_taille and 0 <= index_casey+1 < m_taille:
             gradienty = matrice[index_casex][index_casey+1] - matrice[index_casex][index_casey-1]
-            self.posy = self.posy + (lambdaa * ratio_casey * gradienty)
+            self.posy = self.posy + (lambdaa * gradienty)
 
 """
 list_b = []
