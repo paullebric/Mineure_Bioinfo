@@ -1,8 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-<<<<<<< HEAD
-=======
 from repartition_sucre import *
 
 
@@ -25,7 +23,6 @@ def update(frame):
 # Lancement de l'animation
 ani = animation.FuncAnimation(fig, update, frames=100000, interval=1, blit=True)
 plt.show()
->>>>>>> ab27291acdf2942c25594d0b01679d5cb4c074ca
 
 
 
