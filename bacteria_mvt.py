@@ -22,7 +22,12 @@ class Bacteria:
         ratio_casex = m_taille * self.posx - index_casex
         ratio_casey = m_taille * self.posy - index_casey
         if 0 <= index_casex-1 < m_taille and 0 <= index_casex+1 < m_taille:
-            gradientx = matrice[index_casex+1][index_casey] - matrice[index_casex-1][index_casey]
+            #gradientx = matrice[index_casex+1][index_casey] - matrice[index_casex-1][index_casey]
+            if (matrice[index_casex][index_casey] + matrice[index_casex+1][index_casey])!=0:
+                gradientx = matrice[index_casex+1][index_casey]/(matrice[index_casex][index_casey] + matrice[index_casex+1][index_casey])-0.5
+            else:
+                gradientx = 0
+            print(gradientx)
             self.posx = self.posx + (lambdaa * gradientx)
         if 0 <= index_casey-1 < m_taille and 0 <= index_casey+1 < m_taille:
             gradienty = matrice[index_casex][index_casey+1] - matrice[index_casex][index_casey-1]
