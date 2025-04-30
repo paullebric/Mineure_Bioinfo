@@ -53,6 +53,8 @@ eat rate
 	bacteries.update sur toute les bacteries
 	
 	une fonction qui affiche la matrice des bactéries avec en fond la concentration en sucre
+
+	deplacement des bactéries ==> on normalise 2 fois
 """"" FIN CODE """""
 
 
