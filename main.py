@@ -5,7 +5,7 @@ from repartition_sucre import *
 from bacteria_mvt import *
 
 mat = init_matrice(m_taille)
-#100 bactéries avec des positions aléatoires
+
 list_b = [Bacteria(random.uniform(0, 1), random.uniform(0, 1)) for _ in range(100)]
 
 # Animation setup
@@ -34,7 +34,7 @@ def update(frame):
     sc.set_offsets(np.c_[x_bact, y_bact])
     return [im, sc]
 
-ani = animation.FuncAnimation(fig, update, frames=10000, interval=1, blit=True)
+ani = animation.FuncAnimation(fig, update, frames=10000, interval=0.1, blit=True)
 plt.show()
 
 
