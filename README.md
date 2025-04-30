@@ -9,7 +9,7 @@ Déplacement = Csucre * 0.25
 """""" CODE """"""
 ****matrice concentration en sucre --> le sucre arrive par la case du milieu (constante d'arrivée)
 	LE sucre se diffuse selon le gradient
-	formule = Ci*((1-Cd)/4)
+	formule = k1(Cd-Ca)*((1-Cd)/4) avec Cd concentration de la case qu'on regarde et Ca concentration de la case d'arrivé
 	
 ****matrice des bactéries
 	position de départ soit aléatoire (probabilité d'apparition pour chaque case) soit cluster
