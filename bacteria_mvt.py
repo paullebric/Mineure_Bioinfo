@@ -16,14 +16,17 @@ class Bacteria:
         self.mitose_rate = 0
         self.ATP_bank = 0
     def update_b_pos(self, matrice):
-        index_casex = int(matrice.shape[0] * self.posx)
-        index_casey = int(matrice.shape[1] * self.posy)
-        ratio_casex = matrice.shape[0] * self.posx - index_casex
-        ratio_casey = matrice.shape[1] * self.posy - index_casey
-        gradientx = matrice[index_casex+1][index_casey] - matrice[index_casex-1][index_casey]
-        gradienty = matrice[index_casex][index_casey+1] - matrice[index_casex][index_casey-1]
-        self.posx = self.posx + (lambdaa * gradientx)
-        self.posy = self.posy + (lambdaa * gradienty)
+        m_taille = matrice.shape[0]
+        index_casex = int(m_taille * self.posx)
+        index_casey = int(m_taille * self.posy)
+        ratio_casex = m_taille * self.posx - index_casex
+        ratio_casey = m_taille * self.posy - index_casey
+        if 0 <= index_casex-1 < m_taille and 0 <= index_casex+1 < m_taille:
+            gradientx = matrice[index_casex+1][index_casey] - matrice[index_casex-1][index_casey]
+            self.posx = self.posx + (lambdaa * gradientx)
+        if 0 <= index_casey-1 < m_taille and 0 <= index_casey+1 < m_taille:
+            gradienty = matrice[index_casex][index_casey+1] - matrice[index_casex][index_casey-1]
+            self.posy = self.posy + (lambdaa * gradienty)
 
 """
 list_b = []

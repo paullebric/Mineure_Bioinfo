@@ -3,12 +3,10 @@ import matplotlib.pyplot as plt
 import random
 from repartition_sucre import *
 from bacteria_mvt import *
+
 mat = init_matrice(m_taille)
 
-bacterie_test = Bacteria(0.4, 0.3)
-bacterie_test1 = Bacteria(0.4, 0.4)
-bacterie_test2 = Bacteria(0.4, 0.9)
-list_b = [bacterie_test,bacterie_test1,bacterie_test2]
+list_b = [Bacteria(random.uniform(0, 1), random.uniform(0, 1)) for _ in range(100)]
 
 # Animation setup
 fig, ax = plt.subplots()

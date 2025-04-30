@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import random
 
-m_taille = 15 # Taille de la matrice
+m_taille = 30 # Taille de la matrice
 add_glucose = 10 # nb d'itérations avant l'ajout de glucose
 
 def init_matrice(taille):
