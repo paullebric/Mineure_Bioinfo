@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import random
-lambdaa = 0.01
+lambdaa = 0.1
 class Bacteria:
     def __init__(self, b_posx,b_posy):
         self.nom = 'E.coli'
@@ -22,19 +22,11 @@ class Bacteria:
         ratio_casex = m_taille * self.posx - index_casex
         ratio_casey = m_taille * self.posy - index_casey
         if 0 <= index_casex-1 < m_taille and 0 <= index_casex+1 < m_taille:
-            #gradientx = matrice[index_casex+1][index_casey] - matrice[index_casex-1][index_casey]
-            if (matrice[index_casex-1][index_casey] + matrice[index_casex+1][index_casey])!=0:
-                gradientx = matrice[index_casex+1][index_casey]/(matrice[index_casex-1][index_casey] + matrice[index_casex+1][index_casey])-0.5
-            else:
-                gradientx = 0
-            self.posx = self.posx + (lambdaa * gradientx)
+            gradientx = matrice[index_casex+1][index_casey] - matrice[index_casex-1][index_casey]
+            self.posx = self.posx + (lambdaa * ratio_casex * gradientx)
         if 0 <= index_casey-1 < m_taille and 0 <= index_casey+1 < m_taille:
-            if (matrice[index_casex][index_casey] + matrice[index_casex][index_casey+1])!=0:
-                gradienty = matrice[index_casex][index_casey+1]/(matrice[index_casex][index_casey-1] + matrice[index_casex][index_casey+1])-0.5
-            else:
-                gradienty = 0
-            #gradienty = matrice[index_casex][index_casey+1] - matrice[index_casex][index_casey-1]
-            self.posy = self.posy + (lambdaa * gradienty)
+            gradienty = matrice[index_casex][index_casey+1] - matrice[index_casex][index_casey-1]
+            self.posy = self.posy + (lambdaa * ratio_casey * gradienty)
 
 """
 list_b = []
