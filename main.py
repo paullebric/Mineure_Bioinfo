@@ -34,8 +34,11 @@ def update(frame):
     sc.set_offsets(np.c_[x_bact, y_bact])
     return [im, sc]
 
-ani = animation.FuncAnimation(fig, update, frames=10000, interval=0.1, blit=True)
+ani = animation.FuncAnimation(fig, update, frames=10000, interval=1, blit=True)
 plt.show()
+
+
+
 
 
 
