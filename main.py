@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 from repartition_sucre import *
-
+from bacteria_mvt import *
 
 mat = init_matrice(m_taille)
 #animation
