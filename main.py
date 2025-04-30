@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import random
 from repartition_sucre import *
 from bacteria_mvt import *
+from interaction_bg import *
+
 
 mat = init_matrice(m_taille)
 
@@ -26,6 +28,8 @@ def update(frame):
     if frame % add_glucose == 0:
         mat = sucre_input(mat, (m_taille // 2, m_taille // 2), 0.5, 1)
     for bacterie in list_b:
+        if bacterie.death == True:
+            list_b.remove(bacterie)
         bacterie.update_b_pos(mat)
     im.set_array(mat)
     # Mise à jour des positions des bactéries

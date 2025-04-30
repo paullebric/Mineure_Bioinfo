@@ -6,27 +6,55 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import random
-lambdaa = 0.01
+lambda1 = 0.001
+lambda2 = 0.00001
+hyposthese1 = True  #les bacteries se déplacent selon le gradient de concentration de glucose
+hyposthese2 = False #les bacteries se déplacent proportionnellement vers le glucose mais pas forcement
 class Bacteria:
     def __init__(self, b_posx,b_posy):
         self.nom = 'E.coli'
         self.posx = b_posx
         self.posy = b_posy
-        self.death_rate = 0
-        self.mitose_rate = 0
-        self.ATP_bank = 0
+        self.posmaty = 0
+        self.posmatx = 0
+        self.ATP = 100
+        self.death_threshold = 10
+        self.death_chance = 0.5
+        self.death = False
     def update_b_pos(self, matrice):
         m_taille = matrice.shape[0]
         index_casex = int(m_taille * self.posx)
         index_casey = int(m_taille * self.posy)
-        ratio_casex = m_taille * self.posx - index_casex
-        ratio_casey = m_taille * self.posy - index_casey
+        # ratio_casex = m_taille * self.posx - index_casex
+        # ratio_casey = m_taille * self.posy - index_casey
+    
         if 0 <= index_casex-1 < m_taille and 0 <= index_casex+1 < m_taille:
-            gradientx = matrice[index_casex+1][index_casey] - matrice[index_casex-1][index_casey]
-            self.posx = self.posx + (lambdaa * gradientx)
-        if 0 <= index_casey-1 < m_taille and 0 <= index_casey+1 < m_taille:
-            gradienty = matrice[index_casex][index_casey+1] - matrice[index_casex][index_casey-1]
-            self.posy = self.posy + (lambdaa * gradienty)
+            if 0 <= index_casey-1 < m_taille and 0 <= index_casey+1 < m_taille:
+                gradientx = matrice[index_casex+1][index_casey] - matrice[index_casex-1][index_casey]
+                gradienty = matrice[index_casex][index_casey+1] - matrice[index_casex][index_casey-1]
+                gradn = np.sqrt(gradientx**2 + gradienty**2)
+                if gradn == 0:
+                    gradn = 1e-10
+                delta_gradientx = gradientx/gradn
+                delta_gradienty = gradienty/gradn
+                if hyposthese1:
+                    self.posx = self.posx + lambda1 * delta_gradientx+lambda2 * random.uniform(-1, 1)
+                    self.posy = self.posy + lambda1 * delta_gradienty+lambda2 * random.uniform(-1, 1)
+
+        self.posmatx = int(m_taille * self.posx)
+        self.posmaty = int(m_taille * self.posy)
+    def update_death_and_mitosis(self,matrice,list_b):
+        nb_bacteries_case = 0
+        for bact in list_b:
+            if bact.posmatx == self.posmatx and bact.posmaty == self.posmaty:
+                nb_bacteries_case += 1
+        if nb_bacteries_case >= self.death_threshold:
+            if random.choices([True, False], [self.death_chance, 1-self.death_chance]):
+                self.death = True
+                
+        
+        #cette fonction permet de manger du glucose
+        
 
 """
 list_b = []
