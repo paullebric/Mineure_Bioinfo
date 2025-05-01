@@ -8,13 +8,13 @@ from interaction_bg import *
 
 mat = init_matrice(m_taille)
 
-list_b = [Bacteria(random.uniform(0, 1), random.uniform(0, 1)) for _ in range(100)]
+list_b = [Bacteria(random.uniform(0, 1), random.uniform(0, 1)) for _ in range(1000)]
 
 # Animation setup
 fig, ax = plt.subplots()
 im = ax.imshow(mat, cmap='turbo', vmin=0, vmax=1, extent=[0, m_taille, 0, m_taille], origin='lower')
 plt.colorbar(im, ax=ax)
-title = ax.set_title("Diffusion de sucre")
+title = ax.set_title("Bioreacteur avec sucre et bactéries")
 
 # Initialisation du scatter plot pour les bactéries
 x_bact = [b.posx * m_taille for b in list_b]
@@ -26,11 +26,13 @@ def update(frame):
     global mat
     mat = update_sucre(mat)
     if frame % add_glucose == 0:
-        mat = sucre_input(mat, (m_taille // 2, m_taille // 2), 0.5, 1)
+        if frame <50:
+            mat = sucre_input(mat, (m_taille // 2, m_taille // 2), 0.5, 1)
     for bacterie in list_b:
         if bacterie.death == True:
             list_b.remove(bacterie)
         bacterie.update_b_pos(mat)
+        bacterie.update_death_and_mitosis(mat,list_b)
     im.set_array(mat)
     # Mise à jour des positions des bactéries
     x_bact = [b.posx * m_taille for b in list_b]

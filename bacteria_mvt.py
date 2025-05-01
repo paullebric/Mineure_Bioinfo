@@ -43,9 +43,11 @@ class Bacteria:
         delta_gradientx = gradientx/gradn
         delta_gradienty = gradienty/gradn
         if hyposthese1:
-            self.posx = self.posx + lambda1 * delta_gradientx+lambda2 * random.uniform(-1, 1)
-            self.posy = self.posy + lambda1 * delta_gradienty+lambda2 * random.uniform(-1, 1)
-
+            newposx = self.posx + lambda1 * delta_gradientx+lambda2 * random.uniform(-1, 1)
+            newposy = self.posy + lambda1 * delta_gradienty+lambda2 * random.uniform(-1, 1)
+            #debug des murs : si la posx ou posy sort de la matrice on n'avance pas
+            if 0 <= newposx <= 1 : self.posx=newposx
+            if 0 <= newposy <= 1 : self.posy=newposy
         self.posmatx = int(m_taille * self.posx)
         self.posmaty = int(m_taille * self.posy)
     def update_death_and_mitosis(self,matrice,list_b):
@@ -56,13 +58,5 @@ class Bacteria:
         if nb_bacteries_case >= self.death_threshold:
             if random.choices([True, False], [self.death_chance, 1-self.death_chance]):
                 self.death = True
-                
-        
-        #cette fonction permet de manger du glucose
-        
 
-"""
-list_b = []
-for x in list_b:
-    x.update_b_pos(matrice)
-"""
+        

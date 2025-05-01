@@ -50,6 +50,8 @@ def update_sucre(old_mat):
                     new_mat[ni][nj] -= flux  # Conservation de la masse
     # Clamping entre 0 et 1 pour éviter les valeurs absurdes
     new_mat = np.clip(new_mat, 0, 1)
+    # Arrondie la matrice avec 4 décimale
+    new_mat = np.round(new_mat,4)
     return new_mat
 
 
