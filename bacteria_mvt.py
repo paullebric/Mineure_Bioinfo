@@ -3,13 +3,11 @@ Ce fichier décrit le mouvement des bactéries dans le bio-réacteur
 Les bactéries sont approximés selon des points ayant des coordonées x,y à tout moment t
 """
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 import random
 lambda1 = 0.001
 lambda2 = 0.00001
-hyposthese1 = True  #les bacteries se déplacent selon le gradient de concentration de glucose
-hyposthese2 = False #les bacteries se déplacent proportionnellement vers le glucose mais pas forcement
+hypothese1 = True  #les bacteries se déplacent selon le gradient de concentration de glucose
+hypothese2 = False #les bacteries se déplacent proportionnellement vers le glucose mais pas forcement
 class Bacteria:
     def __init__(self, b_posx,b_posy):
         self.nom = 'E.coli'
@@ -31,10 +29,10 @@ class Bacteria:
         index_casegauche = index_casex - 1
         index_casehaut = index_casey + 1
         index_casebas = index_casey - 1
-        if index_casegauche <0: index_casex = m_taille-1
-        if index_casebas <0: index_casey = m_taille-1
-        if index_casehaut >= m_taille: index_casehaut = 0
-        if index_casedroite >= m_taille: index_casedroite = 0            
+        if index_casegauche <0: index_casex +=1
+        if index_casebas <0: index_casey +=1
+        if index_casehaut >= m_taille: index_casehaut -=1 
+        if index_casedroite >= m_taille: index_casedroite -=1            
         gradientx = matrice[index_casedroite][index_casey] - matrice[index_casegauche][index_casey]
         gradienty = matrice[index_casex][index_casehaut] - matrice[index_casex][index_casebas]
         gradn = np.sqrt(gradientx**2 + gradienty**2)
@@ -42,12 +40,19 @@ class Bacteria:
             gradn = 1e-10
         delta_gradientx = gradientx/gradn
         delta_gradienty = gradienty/gradn
-        if hyposthese1:
+        #hypothese1 : les bacteries se déplacent selon le gradient de concentration de glucose plus au moins vite aléatoirement
+        if hypothese1:
             newposx = self.posx + lambda1 * delta_gradientx+lambda2 * random.uniform(-1, 1)
             newposy = self.posy + lambda1 * delta_gradienty+lambda2 * random.uniform(-1, 1)
-            #debug des murs : si la posx ou posy sort de la matrice on n'avance pas
-            if 0 <= newposx <= 1 : self.posx=newposx
-            if 0 <= newposy <= 1 : self.posy=newposy
+        #hypothese2 : les bacteries se déplacent avec plus de chance vers le glucose mais pas forcement
+        if hypothese2:
+            #marche pas pour l'instant à réfléchir comment faire pour que ca marche
+            newposx = self.posx + lambda1 * random.choices([-1,1],[1-delta_gradientx,delta_gradientx])[0]
+            newposy = self.posy + lambda1 * random.choices([-1,1],[1-delta_gradienty,delta_gradienty])[0]
+        #debug des murs : si la posx ou posy sort de la matrice on n'avance pas
+        if 0 <= newposx <= 1 : self.posx=newposx
+        if 0 <= newposy <= 1 : self.posy=newposy
+        #update de la position de la bactérie dans la matrice
         self.posmatx = int(m_taille * self.posx)
         self.posmaty = int(m_taille * self.posy)
     def update_death_and_mitosis(self,matrice,list_b):

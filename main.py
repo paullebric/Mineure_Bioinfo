@@ -5,10 +5,12 @@ from repartition_sucre import *
 from bacteria_mvt import *
 from interaction_bg import *
 
+m_taille = 5 # Taille de la matrice
+add_glucose = 10 # intervalle d'ajout de glucose
 
+# Initialisation de la matrice et des bactéries
 mat = init_matrice(m_taille)
-
-list_b = [Bacteria(random.uniform(0, 1), random.uniform(0, 1)) for _ in range(1000)]
+list_b = [Bacteria(random.uniform(0, 1), random.uniform(0, 1)) for _ in range(100)]
 
 # Animation setup
 fig, ax = plt.subplots()
@@ -21,12 +23,13 @@ x_bact = [b.posx * m_taille for b in list_b]
 y_bact = [b.posy * m_taille for b in list_b]
 sc = ax.scatter(x_bact, y_bact, c='white', s=10)  # points blancs pour les bactéries
 
-# Fonction d'animation
+# Fonction d'animation = boucle principale
 def update(frame):
     global mat
-    mat = update_sucre(mat)
+    if frame <4:
+        mat = update_sucre(mat)
     if frame % add_glucose == 0:
-        if frame <50:
+        if frame <10:
             mat = sucre_input(mat, (m_taille // 2, m_taille // 2), 0.5, 1)
     for bacterie in list_b:
         if bacterie.death == True:

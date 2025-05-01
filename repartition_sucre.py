@@ -7,8 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import random
 
-m_taille = 10 # Taille de la matrice
-add_glucose = 10 # nb d'itérations avant l'ajout de glucose
+
 
 def init_matrice(taille):
     """Initialise une matrice de taille donnée avec des zeroes."""
@@ -38,7 +37,7 @@ def afficher_matrice(mat, titre=""):
 def update_sucre(old_mat):
     new_mat = np.copy(old_mat)
     D = 0.1  # coefficient de diffusion
-
+    m_taille = old_mat.shape[0]
     for i in range(m_taille):
         for j in range(m_taille):
             for di, dj in [(-1,0), (1,0), (0,-1), (0,1)]:
