@@ -34,8 +34,11 @@ def update(frame):
         if bacterie.death == True:
             list_b.remove(bacterie)
         bacterie.update_b_pos(mat)
-        bacterie.update_death_and_mitosis(mat,list_b)
+        new_bact = bacterie.update_death_and_mitosis(mat,list_b)
+        if isinstance(new_bact,Bacteria):
+            list_b.append(new_bact)
         mat = bacterie.update_eat(mat)
+    print(len(list_b))
     im.set_array(mat)
     # Mise à jour des positions des bactéries
     x_bact = [b.posx * m_taille for b in list_b]

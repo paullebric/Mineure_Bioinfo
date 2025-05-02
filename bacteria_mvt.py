@@ -8,7 +8,11 @@ lambda1 = 0.001
 lambda2 = 0.00001
 hypothese1 = True  #les bacteries se déplacent selon le gradient de concentration de glucose
 hypothese2 = False #les bacteries se déplacent proportionnellement vers le glucose mais pas forcement
-kglucose = 0.005 #quantité de glucose consommée par les bactéries à chaque itération  
+kglucose = 0.005 #quantité de glucose consommée par les bactéries à chaque itération
+kcoutatp = 20 #coût d'ATP pour se déplacer
+kgainatp = 38 #gain d'ATP pour manger du glucose
+kcoutmitose = 120 #coût d'ATP pour se diviser
+kthresholdmitose = 200 #seuil d'ATP pour se diviser
 class Bacteria:
     def __init__(self, b_posx,b_posy):
         self.nom = 'E.coli'
@@ -56,7 +60,9 @@ class Bacteria:
         #update de la position de la bactérie dans la matrice
         self.posmatx = int(m_taille * self.posx)
         self.posmaty = int(m_taille * self.posy)
+        self.ATP -= kcoutatp
     def update_death_and_mitosis(self,matrice,list_b):
+        #mort de la bactérie si il y a trop de bactéries sur la case
         nb_bacteries_case = 0
         for bact in list_b:
             if bact.posmatx == self.posmatx and bact.posmaty == self.posmaty:
@@ -64,10 +70,17 @@ class Bacteria:
         if nb_bacteries_case >= self.death_threshold:
             if random.choices([True, False], [self.death_chance, 1-self.death_chance]):
                 self.death = True
+        #mitosis si il y a assez d'ATP et pas trop de bactéries sur la case
+        if nb_bacteries_case < self.death_threshold and self.ATP > kthresholdmitose:    
+                # On crée une nouvelle bactérie à une position légèrement différente
+                new_bacteria = Bacteria(self.posx,self.posy)
+                self.ATP -= kcoutatp
+                return new_bacteria
     def update_eat(self, matrice):
         # On mange le glucose de la case de la matrice
         if matrice[self.posmatx][self.posmaty] > kglucose*3:   # On mange que si il y a assez de glucose    
-            matrice[self.posmatx][self.posmaty] -= kglucose # Consommation de glucose  
+            matrice[self.posmatx][self.posmaty] -= kglucose # Consommation de glucose 
+            self.ATP += kgainatp # On gagne de l'ATP
         return matrice 
 
         
