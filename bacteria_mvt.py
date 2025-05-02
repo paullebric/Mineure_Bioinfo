@@ -66,7 +66,7 @@ class Bacteria:
                 self.death = True
     def update_eat(self, matrice):
         # On mange le glucose de la case de la matrice
-        if matrice[self.posmatx][self.posmaty] > kglucose:   
+        if matrice[self.posmatx][self.posmaty] > kglucose*3:   # On mange que si il y a assez de glucose    
             matrice[self.posmatx][self.posmaty] -= kglucose # Consommation de glucose  
         return matrice 
 

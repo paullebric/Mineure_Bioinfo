@@ -27,8 +27,8 @@ sc = ax.scatter(x_bact, y_bact, c='white', s=10)  # points blancs pour les bact�
 def update(frame):
     global mat
     mat = update_sucre(mat)
-    if frame % add_glucose == 0:
-        if frame <10:
+    if frame % add_glucose == 0:  # Ajout de glucose à chaque intervalle n défini
+        if frame < 1000: # Ajout de glucose au début de la simulation jusqqquaa n simulaation
             mat = sucre_input(mat, (m_taille // 2, m_taille // 2), 0.5, 1)
     for bacterie in list_b:
         if bacterie.death == True:
