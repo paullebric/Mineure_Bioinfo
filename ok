@@ -2,22 +2,74 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-kernel_size = 5
-def gaussian_filter(kernel_size, sigma=1, muu=0):
- 
-    # Initializing value of x,y as grid of kernel size
-    # in the range of kernel size
- 
-    x, y = np.meshgrid(np.linspace(-1, 1, kernel_size),
-                       np.linspace(-1, 1, kernel_size))
-    dst = np.sqrt(x**2+y**2)
- 
-    # lower normal part of gaussian
-    normal = 1/(2.0 * np.pi * sigma**2)
- 
-    # Calculating Gaussian filter
-    gauss = np.exp(-((dst-muu)**2 / (2.0 * sigma**2))) * normal
-    return gauss
-gaussian = gaussian_filter(kernel_size)
-print("gaussian filter of{} X {} :".format(kernel_size,kernel_size))
-print(gaussian)
+def afficher_matrice_texte(mat, decimales=2):
+    """Affiche une matrice NumPy sous forme de tableau lisible."""
+    lignes = mat.shape[0]
+    colonnes = mat.shape[1]
+    for i in range(lignes):
+        ligne = ""
+        for j in range(colonnes):
+            valeur = round(mat[i, j], decimales)
+            ligne += f"{valeur:6.2f} "  # Largeur fixe pour aligner
+        print(ligne)
+
+# Paramètres
+taille = 81              # taille de la matrice (10x10 par exemple)
+lambda_param = 0.8       # paramètre lambda de la loi exponentielle
+scale = 1 / lambda_param # paramètre 'scale' pour np.random.exponential
+epaisseur = 5
+
+# Création d'une matrice vide
+mat = np.zeros((taille, taille))
+
+# Remplissage des bords avec des valeurs exponentielles
+# Haut
+mat[0:epaisseur, :] = np.random.exponential(scale=scale, size=(epaisseur,taille))
+# Bas
+mat[-epaisseur:, :] = np.random.exponential(scale=scale, size=(epaisseur,taille))
+# Gauche
+mat[:, 0:epaisseur] = np.random.exponential(scale=scale, size=(taille, epaisseur))
+# Droite
+mat[:, -epaisseur:] = np.random.exponential(scale=scale, size=(taille, epaisseur))
+
+# Affichage graphique
+"""plt.imshow(mat, cmap='YlOrRd', vmin=0, vmax=np.max(mat))
+plt.colorbar(label="Valeur (exponentielle)")
+plt.title("Distribution exponentielle sur les bords d'une matrice")
+plt.show()"""
+
+def generate_gaussian_matrix(size, fwhm, amplitude):
+    """
+    Crée une matrice 2D avec une distribution gaussienne centrée.
+    
+    - size : taille de la matrice (carrée)
+    - fwhm : largeur à mi-hauteur (Full Width Half Maximum)
+    - amplitude : hauteur du pic
+    """
+    x = np.arange(0, size, 1)
+    y = x[:, np.newaxis]
+    
+    x0 = y0 = size // 2  # centre de la gaussienne
+    sigma = fwhm / (2 * np.sqrt(2 * np.log(2)))  # conversion FWHM → sigma
+    
+    gaussian = amplitude * np.exp(-((x - x0)**2 + (y - y0)**2) / (2 * sigma**2))
+    return gaussian
+# Paramètres
+size = 81
+fwhm = 50
+amplitude = 10
+
+# Génération et affichage
+mat2 = generate_gaussian_matrix(size, fwhm, amplitude)
+
+"""plt.imshow(mat2, cmap='viridis', origin='lower')
+plt.colorbar(label="Intensité gaussienne")
+plt.title("Distribution gaussienne centrée dans une matrice")
+plt.show()"""
+
+
+matrice = mat + mat2 
+plt.imshow(matrice, cmap='viridis', origin='lower')
+plt.colorbar(label="Intensité gaussienne")
+plt.title("concentration de sucre")
+plt.show()
