@@ -8,10 +8,10 @@ import matplotlib.animation as animation
 import random
 
 
-
 def init_matrice(taille):
-    """Initialise une matrice de taille donnée avec des zeroes."""
+    Initialise une matrice de taille donnée avec des zeroes.
     return np.zeros((taille, taille))
+
 
 #permet de mettre du sucre a un endroit donné de la matrice pour un certain amount et une certaine area
 def sucre_input(mat,position,amount,area):
@@ -52,5 +52,3 @@ def update_sucre(old_mat):
     # Arrondie la matrice avec 4 décimale
     new_mat = np.round(new_mat,4)
     return new_mat
-
-

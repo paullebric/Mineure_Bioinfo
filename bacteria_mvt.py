@@ -4,6 +4,7 @@ Les bactéries sont approximés selon des points ayant des coordonées x,y à to
 """
 import numpy as np
 import random
+from main import *
 lambda1 = 0.001
 lambda2 = 0.00001
 hypothese1 = True  #les bacteries se déplacent selon le gradient de concentration de glucose
@@ -25,6 +26,7 @@ class Bacteria:
         self.death_chance = 0.5
         self.death = False
     def update_b_pos(self, matrice):
+        
         m_taille = matrice.shape[0]
         index_casex = int(m_taille * self.posx)
         index_casey = int(m_taille * self.posy)

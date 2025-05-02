@@ -87,3 +87,8 @@ Various movement models:
 Visualization:
 	2D graphical output showing bacteria and sugar distributions. (maybe with pygame)
 
+----Cours avec  JYT vendredi matin
+Je comprends pas de quoi il parle déso
+On essaie de faire en sorte que le nombre aléatoire tiré pour le déplacement des bactéries soit normal distributed
+Pour ca on utiliser la fonction numpy random.randn
+Pour une raison inconnue on va essayer de 

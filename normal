@@ -1,0 +1,6 @@
+b = 5
+a =4
+def somme(a,b):
+    return a+b
+
+print(somme(a,b))
