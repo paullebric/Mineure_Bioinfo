@@ -8,6 +8,7 @@ lambda1 = 0.001
 lambda2 = 0.00001
 hypothese1 = True  #les bacteries se déplacent selon le gradient de concentration de glucose
 hypothese2 = False #les bacteries se déplacent proportionnellement vers le glucose mais pas forcement
+kglucose = 0.005 #quantité de glucose consommée par les bactéries à chaque itération  
 class Bacteria:
     def __init__(self, b_posx,b_posy):
         self.nom = 'E.coli'
@@ -63,5 +64,10 @@ class Bacteria:
         if nb_bacteries_case >= self.death_threshold:
             if random.choices([True, False], [self.death_chance, 1-self.death_chance]):
                 self.death = True
+    def update_eat(self, matrice):
+        # On mange le glucose de la case de la matrice
+        if matrice[self.posmatx][self.posmaty] > kglucose:   
+            matrice[self.posmatx][self.posmaty] -= kglucose # Consommation de glucose  
+        return matrice 
 
         

@@ -5,7 +5,7 @@ from repartition_sucre import *
 from bacteria_mvt import *
 from interaction_bg import *
 
-m_taille = 5 # Taille de la matrice
+m_taille = 15 # Taille de la matrice
 add_glucose = 10 # intervalle d'ajout de glucose
 
 # Initialisation de la matrice et des bactéries
@@ -26,8 +26,7 @@ sc = ax.scatter(x_bact, y_bact, c='white', s=10)  # points blancs pour les bact�
 # Fonction d'animation = boucle principale
 def update(frame):
     global mat
-    if frame <4:
-        mat = update_sucre(mat)
+    mat = update_sucre(mat)
     if frame % add_glucose == 0:
         if frame <10:
             mat = sucre_input(mat, (m_taille // 2, m_taille // 2), 0.5, 1)
@@ -36,6 +35,7 @@ def update(frame):
             list_b.remove(bacterie)
         bacterie.update_b_pos(mat)
         bacterie.update_death_and_mitosis(mat,list_b)
+        mat = bacterie.update_eat(mat)
     im.set_array(mat)
     # Mise à jour des positions des bactéries
     x_bact = [b.posx * m_taille for b in list_b]
