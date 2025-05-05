@@ -8,8 +8,8 @@ import matplotlib.animation as animation
 import random
 
 
-"""def init_matrice(taille):
-    Initialise une matrice de taille donnée avec des zeroes.
+def init_matrice(taille):
+    #Initialise une matrice de taille donnée avec des zeroes.
     return np.zeros((taille, taille))
 
 
@@ -51,7 +51,7 @@ def update_sucre(old_mat):
     new_mat = np.clip(new_mat, 0, 1)
     # Arrondie la matrice avec 4 décimale
     new_mat = np.round(new_mat,4)
-    return new_mat"""
+    return new_mat
 
 
 
@@ -72,7 +72,7 @@ def generate_gaussian_matrix(size, fwhm=3, amplitude=1):
     
     gaussian = amplitude * np.exp(-((x - x0)**2 + (y - y0)**2) / (2 * sigma**2))
     return gaussian
-
+"""
 # Paramètres
 size = 81
 fwhm = 30
@@ -85,3 +85,5 @@ plt.imshow(mat, cmap='viridis', origin='lower')
 plt.colorbar(label="Intensité gaussienne")
 plt.title("Distribution gaussienne centrée dans une matrice")
 plt.show()
+
+"""

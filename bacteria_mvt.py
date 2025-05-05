@@ -4,7 +4,7 @@ Les bactéries sont approximés selon des points ayant des coordonées x,y à to
 """
 import numpy as np
 import random
-from main import *
+#from main import *
 lambda1 = 0.001
 lambda2 = 0.00001
 hypothese1 = True  #les bacteries se déplacent selon le gradient de concentration de glucose
@@ -14,6 +14,7 @@ kcoutatp = 20 #coût d'ATP pour se déplacer
 kgainatp = 38 #gain d'ATP pour manger du glucose
 kcoutmitose = 120 #coût d'ATP pour se diviser
 kthresholdmitose = 200 #seuil d'ATP pour se diviser
+
 class Bacteria:
     def __init__(self, b_posx,b_posy):
         self.nom = 'E.coli'

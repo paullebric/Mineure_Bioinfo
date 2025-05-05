@@ -2,8 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 from repartition_sucre import *
-from bacteria_mvt import *
-from interaction_bg import *
+from bacteria_mvt import Bacteria
 
 m_taille = 15 # Taille de la matrice
 add_glucose = 10 # intervalle d'ajout de glucose
