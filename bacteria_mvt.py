@@ -2,6 +2,7 @@
 Ce fichier décrit le mouvement des bactéries dans le bio-réacteur
 Les bactéries sont approximés selon des points ayant des coordonées x,y à tout moment t
 """
+
 import numpy as np
 import random
 #from main import *
