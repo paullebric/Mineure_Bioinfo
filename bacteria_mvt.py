@@ -6,10 +6,10 @@ Les bactéries sont approximés selon des points ayant des coordonées x,y à to
 import numpy as np
 import random as rd
 #from main import *
-lambda1 = 0.5 #amplitude de la composante brownienne aléatoire
-lambda2 = 0.5 #vitesse de déplacement des bactéries
-hypothese1 = True  #les bacteries se déplacent selon le gradient de concentration de glucose
-hypothese2 = False #quantité de glucose consommée par les bactéries à chaque itération
+lambda1 = 0.001 #amplitude de la composante brownienne aléatoire
+lambda2 = 0.00001 #vitesse de déplacement des bactéries
+hypothese1 = False #les bacteries se déplacent selon le gradient de concentration de glucose
+hypothese2 = True #quantité de glucose consommée par les bactéries à chaque itération
 kcoutatp = 20 #coût d'ATP pour se déplacer
 kgainatp = 38 #gain d'ATP pour manger du glucose
 kcoutmitose = 120 #coût d'ATP pour se diviser
@@ -34,14 +34,15 @@ class Bacteria:
         sum_Elocal = 0
         sum_gradx = 0
         sum_grady = 0
-
         for a in range(matrice.shape[0]):
             for b in range(matrice.shape[1]):
-                dx = b - self.posmatx
-                dy = a - self.posmaty
-                dist_sq = dx**2 + dy**2 + epsilon
+                if a!= self.posmaty or b != self.posmatx:
+                    dx = b - self.posmatx
+                    dy = a - self.posmaty
+                    dist_sq = dx**2 + dy**2 + epsilon
 
             sum_Elocal += matrice[a][b] / (dist_sq**0.5)
+            print(matrice[a][b] / (dist_sq**0.5))
             sum_gradx += dx * matrice[a][b] / (dist_sq**1.5)
             sum_grady += dy * matrice[a][b] / (dist_sq**1.5)
 
@@ -51,27 +52,27 @@ class Bacteria:
         
     def update_b_pos(self, matrice):
         m_taille = matrice.shape[0]
-        # index_casex = int(m_taille * self.posx)
-        # index_casey = int(m_taille * self.posy)
-        # # ratio_casex = m_taille * self.posx - index_casex
-        # # ratio_casey = m_taille * self.posy - index_casey
-        # index_casedroite = index_casex + 1
-        # index_casegauche = index_casex - 1
-        # index_casehaut = index_casey + 1
-        # index_casebas = index_casey - 1
-        # if index_casegauche <0: index_casex +=1
-        # if index_casebas <0: index_casey +=1
-        # if index_casehaut >= m_taille: index_casehaut -=1 
-        # if index_casedroite >= m_taille: index_casedroite -=1            
-        # gradientx = matrice[index_casey][index_casedroite] - matrice[index_casey][index_casegauche]
-        # gradienty = matrice[index_casehaut][index_casex] - matrice[index_casebas][index_casex]
-        # gradn = np.sqrt(gradientx**2 + gradienty**2)
-        # if gradn == 0:
-        #     gradn = 1e-10
-        # delta_gradientx = gradientx/gradn
-        # delta_gradienty = gradienty/gradn
+        index_casex = int(m_taille * self.posx)
+        index_casey = int(m_taille * self.posy)
+        # ratio_casex = m_taille * self.posx - index_casex
+        # ratio_casey = m_taille * self.posy - index_casey
+        index_casedroite = index_casex + 1
+        index_casegauche = index_casex - 1
+        index_casehaut = index_casey + 1
+        index_casebas = index_casey - 1
+        if index_casegauche <0: index_casex +=1
+        if index_casebas <0: index_casey +=1
+        if index_casehaut >= m_taille: index_casehaut -=1 
+        if index_casedroite >= m_taille: index_casedroite -=1            
+        gradientx = matrice[index_casey][index_casedroite] - matrice[index_casey][index_casegauche]
+        gradienty = matrice[index_casehaut][index_casex] - matrice[index_casebas][index_casex]
+        gradn = np.sqrt(gradientx**2 + gradienty**2)
+        if gradn == 0:
+            gradn = 1e-10
+        delta_gradientx = gradientx/gradn
+        delta_gradienty = gradienty/gradn
         #hypothese1 : les bacteries se déplacent selon le gradient de concentration de glucose plus au moins vite aléatoirement
-        self.Etotal_Gradient(matrice)
+        #self.Etotal_Gradient(matrice)
         if hypothese1:
             newposx = self.posx + lambda1 * self.gradx+lambda2
             newposy = self.posy + lambda1 * self.grady+lambda2
