@@ -9,7 +9,7 @@ add_glucose = 10 # intervalle d'ajout de glucose
 
 # Initialisation de la matrice et des bactéries
 mat = init_matrice(m_taille)
-list_b = [Bacteria(rd.uniform(0, 1), rd.uniform(0, 1)) for _ in range(1000)]
+list_b = [Bacteria(rd.uniform(0, 1), rd.uniform(0, 1)) for _ in range(3)]
 
 # Animation setup
 fig, ax = plt.subplots()
@@ -25,7 +25,7 @@ sc = ax.scatter(x_bact, y_bact, c='white', s=10)  # points blancs pour les bact�
 # Fonction d'animation = boucle principale
 def update(frame):
     global mat
-    steps_per_frame = 500  # vitesse de l'animation
+    steps_per_frame = 1  # vitesse de l'animation
     for _ in range(steps_per_frame):
         iteration = frame * steps_per_frame + _
         if iteration % add_glucose == 0:  # Ajout de glucose à chaque intervalle n défini
@@ -36,7 +36,7 @@ def update(frame):
             if iteration < 400: # Loi de flick = repartition du glucose jusqu'à n frames
                 mat = update_sucre(mat)
         #les bacteries existe a partir de ce moment
-        if iteration> 400:
+        if iteration> 1:
             for bacterie in list_b:
                 if bacterie.death == True:
                     list_b.remove(bacterie)
@@ -55,7 +55,7 @@ def update(frame):
     sc.set_offsets(np.c_[x_bact, y_bact])
     return [im, sc]
 
-ani = animation.FuncAnimation(fig, update, frames=10000, interval=1, blit=True)
+ani = animation.FuncAnimation(fig, update, frames=10, interval=1, blit=True)
 plt.show()
 
 
