@@ -30,20 +30,24 @@ class Bacteria:
         self.gradx = 0
         self.grady = 0
     def Etotal_Gradient(self,matrice):
+        epsilon = 1e-9
         sum_Elocal = 0
         sum_gradx = 0
         sum_grady = 0
+
         for a in range(matrice.shape[0]):
             for b in range(matrice.shape[1]):
-                print(self.posmaty,self.posmatx)
-                print(matrice[a][b]/(((a-self.posmaty)**2 + (b-self.posmatx)**2)**0.5))
-                sum_Elocal += matrice[a][b]/(((a-self.posmaty)**2 + (b-self.posmatx)**2)**0.5)
-                sum_gradx += (b-self.posmatx)*matrice[a][b]/(((a-self.posmaty)**2 + (b-self.posmatx)**2)**1.5)
-                sum_grady += (a-self.posmaty)*matrice[a][b]/(((a-self.posmaty)**2 + (b-self.posmatx)**2)**1.5)
-        print("sum_Elocal",sum_Elocal)
-        self.Etotal = matrice[self.posmaty,self.posmatx]*sum_Elocal
-        self.gradx = sum_gradx/matrice.shape[0]**2
-        self.grady = sum_grady/matrice.shape[0]**2
+                dx = b - self.posmatx
+                dy = a - self.posmaty
+                dist_sq = dx**2 + dy**2 + epsilon
+
+            sum_Elocal += matrice[a][b] / (dist_sq**0.5)
+            sum_gradx += dx * matrice[a][b] / (dist_sq**1.5)
+            sum_grady += dy * matrice[a][b] / (dist_sq**1.5)
+
+        self.Etotal = matrice[self.posmaty, self.posmatx] * sum_Elocal
+        self.gradx = sum_gradx / (matrice.shape[0] * matrice.shape[1])
+        self.grady = sum_grady / (matrice.shape[0] * matrice.shape[1])
         
     def update_b_pos(self, matrice):
         m_taille = matrice.shape[0]
