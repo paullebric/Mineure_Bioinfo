@@ -25,7 +25,7 @@ sc = ax.scatter(x_bact, y_bact, c='white', s=10)  # points blancs pour les bact�
 # Fonction d'animation = boucle principale
 def update(frame):
     global mat
-    steps_per_frame = 5  # vitesse de l'animation
+    steps_per_frame = 500  # vitesse de l'animation
     for _ in range(steps_per_frame):
         iteration = frame * steps_per_frame + _
         if iteration % add_glucose == 0:  # Ajout de glucose à chaque intervalle n défini
