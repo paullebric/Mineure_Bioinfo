@@ -4,7 +4,7 @@ import random as rd
 from repartition_sucre import *
 from bacteria_mvt import Bacteria
 
-m_taille = 25 # Taille de la matrice
+m_taille = 3 # Taille de la matrice
 add_glucose = 10 # intervalle d'ajout de glucose
 
 # Initialisation de la matrice et des bactéries
@@ -30,9 +30,9 @@ def update(frame):
         iteration = frame * steps_per_frame + _
         if iteration % add_glucose == 0:  # Ajout de glucose à chaque intervalle n défini
             if iteration < 200: # Ajout de glucose au début de la simulation jusqqquaa n simulaation
-                #mat = sucre_input(mat, (m_taille // 2, m_taille // 2), 0.5, 1)
-                mat = sucre_input(mat, (12, 10), 0.1, 1)
-                mat = sucre_input(mat, (20, 22), 0.5, 1)
+                mat = sucre_input(mat, (m_taille // 2, m_taille // 2), 0.1, 1)
+                #mat = sucre_input(mat, (12, 10), 0.1, 1)
+                #mat = sucre_input(mat, (20, 22), 0.5, 1)
             if iteration < 400: # Loi de flick = repartition du glucose jusqu'à n frames
                 mat = update_sucre(mat)
         #les bacteries existe a partir de ce moment

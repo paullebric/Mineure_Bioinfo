@@ -35,13 +35,15 @@ class Bacteria:
         sum_grady = 0
         for a in range(matrice.shape[0]):
             for b in range(matrice.shape[1]):
+                print(self.posmaty,self.posmatx)
+                print(matrice[a][b]/(((a-self.posmaty)**2 + (b-self.posmatx)**2)**0.5))
                 sum_Elocal += matrice[a][b]/(((a-self.posmaty)**2 + (b-self.posmatx)**2)**0.5)
                 sum_gradx += (b-self.posmatx)*matrice[a][b]/(((a-self.posmaty)**2 + (b-self.posmatx)**2)**1.5)
                 sum_grady += (a-self.posmaty)*matrice[a][b]/(((a-self.posmaty)**2 + (b-self.posmatx)**2)**1.5)
-        print("sum", sum_gradx, sum_grady)
+        print("sum_Elocal",sum_Elocal)
         self.Etotal = matrice[self.posmaty,self.posmatx]*sum_Elocal
-        self.gradx = sum_gradx
-        self.grady = sum_grady
+        self.gradx = sum_gradx/matrice.shape[0]**2
+        self.grady = sum_grady/matrice.shape[0]**2
         
     def update_b_pos(self, matrice):
         m_taille = matrice.shape[0]
@@ -67,10 +69,8 @@ class Bacteria:
         #hypothese1 : les bacteries se déplacent selon le gradient de concentration de glucose plus au moins vite aléatoirement
         self.Etotal_Gradient(matrice)
         if hypothese1:
-            print("grad",self.gradx,self.grady)
             newposx = self.posx + lambda1 * self.gradx+lambda2
             newposy = self.posy + lambda1 * self.grady+lambda2
-            print(newposx,newposy)
         #hypothese2 : les bacteries se déplacent avec plus de chance vers le glucose mais pas forcement
         if hypothese2:
         #marche pas pour l'instant à réfléchir comment faire pour que ca marche
