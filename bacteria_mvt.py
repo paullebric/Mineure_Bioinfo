@@ -6,8 +6,8 @@ import numpy as np
 import random as rd
 #from main import *
 vision_b = 5 #vision des bactéries
-lambda1 = 0.01 #Vitesse de déplacement des bactéries selon le gradient
-lambda2 = 0.05 #Amplitude de l'aléatoire dans le déplacement des bactéries
+lambda1 = 1 #Vitesse de déplacement des bactéries selon le gradient
+lambda2 = 0 #Amplitude de l'aléatoire dans le déplacement des bactéries
 hypothese1 = True#les bacteries se déplacent selon le gradient de concentration de glucose
 hypothese2 = not hypothese1 #quantité de glucose consommée par les bactéries à chaque itération
 cout_atp_mouvement = 10 #coût d'ATP pour se déplacer
@@ -25,11 +25,13 @@ class Bacteria:
         self.posmatx = 0
         self.ATP = 100
         self.pop_threshold = 10 #seuil de surpopulation pour la mort dans une case
-        self.death_pop_chance = 0.5 #taut de chance de mourir si la case est surpeuplée
+        self.death_pop_chance = 0.8 #taut de chance de mourir si la case est surpeuplée
         self.death = False
         self.Etotal = 0
         self.gradx = 0
         self.grady = 0
+        self.gradnumx = 0
+        self.gradnumy = 0
         
     def Gradient(self,matrice):
         gluc_tot = np.sum(matrice)
@@ -57,8 +59,8 @@ class Bacteria:
         brownx = rd.uniform(-1, 1)
         browny = rd.uniform(-1, 1)
         # ajout d’un biais vers le gradient
-        newposx = self.posx + lambda2 * brownx + lambda1 * self.gradx
-        newposy = self.posy + lambda2 * browny + lambda1 * self.grady
+        newposx = self.posx + lambda2 * brownx + lambda1 * self.gradnumx
+        newposy = self.posy + lambda2 * browny + lambda1 * self.gradnumy
         #debug des murs : si la posx ou posy sort de la matrice on n'avance pas
         if 0 <= newposx <= 1 : self.posx=newposx
         if 0 <= newposy <= 1 : self.posy=newposy
