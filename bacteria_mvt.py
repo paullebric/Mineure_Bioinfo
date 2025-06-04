@@ -6,8 +6,8 @@ Les bactéries sont approximés selon des points ayant des coordonées x,y à to
 import numpy as np
 import random as rd
 #from main import *
-lambda1 = 0.001 #amplitude de la composante brownienne aléatoire
-lambda2 = 0.00001 #vitesse de déplacement des bactéries
+lambda1 = 0.01 #amplitude de la composante brownienne aléatoire
+lambda2 = 0.0025 #vitesse de déplacement des bactéries
 hypothese1 = False #les bacteries se déplacent selon le gradient de concentration de glucose
 hypothese2 = True #quantité de glucose consommée par les bactéries à chaque itération
 kcoutatp = 20 #coût d'ATP pour se déplacer
@@ -74,8 +74,8 @@ class Bacteria:
         #hypothese1 : les bacteries se déplacent selon le gradient de concentration de glucose plus au moins vite aléatoirement
         #self.Etotal_Gradient(matrice)
         if hypothese1:
-            newposx = self.posx + lambda1 * self.gradx+lambda2
-            newposy = self.posy + lambda1 * self.grady+lambda2
+            newposx = self.posx + lambda1 * delta_gradientx+lambda2
+            newposy = self.posy + lambda1 * delta_gradienty+lambda2
         #hypothese2 : les bacteries se déplacent avec plus de chance vers le glucose mais pas forcement
         if hypothese2:
         #marche pas pour l'instant à réfléchir comment faire pour que ca marche
@@ -83,8 +83,8 @@ class Bacteria:
             brownx = rd.uniform(-1, 1)
             browny = rd.uniform(-1, 1)
         # ajout d’un biais vers le gradient
-            newposx = self.posx + lambda1 * brownx + lambda2 * self.gradx
-            newposy = self.posy + lambda1 * browny + lambda2 * self.grady
+            newposx = self.posx + lambda1 * brownx + lambda2 * delta_gradientx
+            newposy = self.posy + lambda1 * browny + lambda2 * delta_gradienty
         #debug des murs : si la posx ou posy sort de la matrice on n'avance pas
         if 0 <= newposx <= 1 : self.posx=newposx
         if 0 <= newposy <= 1 : self.posy=newposy
