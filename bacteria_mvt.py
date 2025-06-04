@@ -2,18 +2,19 @@
 Ce fichier décrit le mouvement des bactéries dans le bio-réacteur
 Les bactéries sont approximés selon des points ayant des coordonées x,y à tout moment t
 """
-
 import numpy as np
 import random as rd
 #from main import *
-lambda1 = 0.01 #amplitude de la composante brownienne aléatoire
-lambda2 = 0.0025 #vitesse de déplacement des bactéries
-hypothese1 = False #les bacteries se déplacent selon le gradient de concentration de glucose
-hypothese2 = True #quantité de glucose consommée par les bactéries à chaque itération
+vision_b = 5 #vision des bactéries
+lambda1 = 0.01 #Vitesse de déplacement des bactéries selon le gradient
+lambda2 = 0.0025 #Amplitude de l'aléatoire dans le déplacement des bactéries
+hypothese1 = True#les bacteries se déplacent selon le gradient de concentration de glucose
+hypothese2 = not hypothese1 #quantité de glucose consommée par les bactéries à chaque itération
 kcoutatp = 20 #coût d'ATP pour se déplacer
 kgainatp = 38 #gain d'ATP pour manger du glucose
 kcoutmitose = 120 #coût d'ATP pour se diviser
 kthresholdmitose = 200 #seuil d'ATP pour se diviser
+kglucose = 0.1 #quantité de glucose consommée par les bactéries à chaque itération
 
 class Bacteria:
     def __init__(self, b_posx,b_posy):
@@ -29,53 +30,32 @@ class Bacteria:
         self.Etotal = 0
         self.gradx = 0
         self.grady = 0
-    def Etotal_Gradient(self,matrice):
-        epsilon = 1e-9
-        sum_Elocal = 0
-        sum_gradx = 0
-        sum_grady = 0
-        for a in range(matrice.shape[0]):
-            for b in range(matrice.shape[1]):
-                if a!= self.posmaty or b != self.posmatx:
-                    dx = b - self.posmatx
-                    dy = a - self.posmaty
-                    dist_sq = dx**2 + dy**2 + epsilon
+    def Gradient(self,matrice):
+        gluc_tot = np.sum(matrice)
+        gradx=0
+        grady=0  
+        for i in range(self.posmaty-vision_b, self.posmaty+vision_b):
+            for j in range(self.posmatx-vision_b, self.posmatx+vision_b):
+                if 0<i<matrice.shape[0] and 0<j<matrice.shape[1]:
+                    hypothenuse=((self.posmatx - j)**2 + (self.posmaty - i)**2)**0.5
+                    if hypothenuse != 0:  # éviter la division par zéro
+                        delta_distance_x= (j - self.posmatx) / hypothenuse**3
+                        delta_distance_y= (i - self.posmaty) / hypothenuse**3
+                        gradx += matrice[i][j]/gluc_tot * delta_distance_x
+                        grady += matrice[i][j]/gluc_tot * delta_distance_y
+        gradnx = gradx/(gradx**2+grady**2)**0.5
+        gradny = grady/(gradx**2+grady**2)**0.5
+        self.gradx = gradnx
+        self.grady = gradny
 
-            sum_Elocal += matrice[a][b] / (dist_sq**0.5)
-            print(matrice[a][b] / (dist_sq**0.5))
-            sum_gradx += dx * matrice[a][b] / (dist_sq**1.5)
-            sum_grady += dy * matrice[a][b] / (dist_sq**1.5)
-
-        self.Etotal = matrice[self.posmaty, self.posmatx] * sum_Elocal
-        self.gradx = sum_gradx / (matrice.shape[0] * matrice.shape[1])
-        self.grady = sum_grady / (matrice.shape[0] * matrice.shape[1])
-        
     def update_b_pos(self, matrice):
         m_taille = matrice.shape[0]
-        index_casex = int(m_taille * self.posx)
-        index_casey = int(m_taille * self.posy)
-        # ratio_casex = m_taille * self.posx - index_casex
-        # ratio_casey = m_taille * self.posy - index_casey
-        index_casedroite = index_casex + 1
-        index_casegauche = index_casex - 1
-        index_casehaut = index_casey + 1
-        index_casebas = index_casey - 1
-        if index_casegauche <0: index_casex +=1
-        if index_casebas <0: index_casey +=1
-        if index_casehaut >= m_taille: index_casehaut -=1 
-        if index_casedroite >= m_taille: index_casedroite -=1            
-        gradientx = matrice[index_casey][index_casedroite] - matrice[index_casey][index_casegauche]
-        gradienty = matrice[index_casehaut][index_casex] - matrice[index_casebas][index_casex]
-        gradn = np.sqrt(gradientx**2 + gradienty**2)
-        if gradn == 0:
-            gradn = 1e-10
-        delta_gradientx = gradientx/gradn
-        delta_gradienty = gradienty/gradn
-        #hypothese1 : les bacteries se déplacent selon le gradient de concentration de glucose plus au moins vite aléatoirement
-        #self.Etotal_Gradient(matrice)
+        self.posmatx = int(m_taille * self.posx)
+        self.posmaty = int(m_taille * self.posy)
+        self.Gradient(matrice)
         if hypothese1:
-            newposx = self.posx + lambda1 * delta_gradientx+lambda2
-            newposy = self.posy + lambda1 * delta_gradienty+lambda2
+            newposx = self.posx + lambda1 * self.gradx
+            newposy = self.posy + lambda1 * self.grady
         #hypothese2 : les bacteries se déplacent avec plus de chance vers le glucose mais pas forcement
         if hypothese2:
         #marche pas pour l'instant à réfléchir comment faire pour que ca marche
@@ -83,15 +63,14 @@ class Bacteria:
             brownx = rd.uniform(-1, 1)
             browny = rd.uniform(-1, 1)
         # ajout d’un biais vers le gradient
-            newposx = self.posx + lambda1 * brownx + lambda2 * delta_gradientx
-            newposy = self.posy + lambda1 * browny + lambda2 * delta_gradienty
+            newposx = self.posx + lambda2 * brownx + lambda1 * self.gradx
+            newposy = self.posy + lambda2 * browny + lambda1 * self.grady
         #debug des murs : si la posx ou posy sort de la matrice on n'avance pas
         if 0 <= newposx <= 1 : self.posx=newposx
         if 0 <= newposy <= 1 : self.posy=newposy
         #update de la position de la bactérie dans la matrice
-        self.posmatx = int(m_taille * self.posx)
-        self.posmaty = int(m_taille * self.posy)
         self.ATP -= kcoutatp
+        
     def update_death_and_mitosis(self,matrice,list_b):
         #mort de la bactérie si il y a trop de bactéries sur la case
         nb_bacteries_case = 0
@@ -107,6 +86,7 @@ class Bacteria:
                 new_bacteria = Bacteria(self.posx,self.posy)
                 self.ATP -= kcoutatp
                 return new_bacteria
+            
     def update_eat(self, matrice):
         # On mange le glucose de la case de la matrice
         if matrice[self.posmaty][self.posmatx] > kglucose*3:   # On mange que si il y a assez de glucose    
