@@ -9,7 +9,7 @@ add_glucose = 10 # intervalle d'ajout de glucose
 
 # Initialisation de la matrice et des bactéries
 mat = init_matrice(m_taille)
-list_b = [Bacteria(rd.uniform(0, 1), rd.uniform(0, 1)) for _ in range(30)]
+list_b = [Bacteria(rd.uniform(0, 1), rd.uniform(0, 1)) for _ in range(3)]
 
 # Animation setup
 fig, ax = plt.subplots()
@@ -28,8 +28,7 @@ def update(frame):
     steps_per_frame = 1  # vitesse de l'animation
     for _ in range(steps_per_frame):
         iteration = frame * steps_per_frame + _
-        print(iteration)
-        if iteration < 20: # Ajout de glucose au début de la simulation jusqqquaa n simulaation
+        if iteration < 200000: # Ajout de glucose au début de la simulation jusqqquaa n simulaation
                 #mat = sucre_input(mat, (m_taille // 2, m_taille // 2), 0.1, 1)
                 mat = sucre_input(mat, (12, 10), 0.5, 1)
                 mat = sucre_input(mat, (20, 22), 1, 1)
@@ -47,6 +46,7 @@ def update(frame):
                     if isinstance(new_bact,Bacteria):
                         list_b.append(new_bact)
                     mat = bacterie.update_eat(mat)
+    print(len(list_b), "bactéries vivantes")
     im.set_array(mat)
     # Mise à jour des positions des bactéries
     x_bact = [b.posx * m_taille for b in list_b]

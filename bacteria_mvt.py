@@ -7,13 +7,13 @@ import random as rd
 #from main import *
 vision_b = 5 #vision des bactéries
 lambda1 = 0.01 #Vitesse de déplacement des bactéries selon le gradient
-lambda2 = 0.0025 #Amplitude de l'aléatoire dans le déplacement des bactéries
+lambda2 = 0.05 #Amplitude de l'aléatoire dans le déplacement des bactéries
 hypothese1 = True#les bacteries se déplacent selon le gradient de concentration de glucose
 hypothese2 = not hypothese1 #quantité de glucose consommée par les bactéries à chaque itération
-kcoutatp = 20 #coût d'ATP pour se déplacer
-kgainatp = 38 #gain d'ATP pour manger du glucose
-kcoutmitose = 120 #coût d'ATP pour se diviser
-kthresholdmitose = 200 #seuil d'ATP pour se diviser
+cout_atp_mouvement = 10 #coût d'ATP pour se déplacer
+kgainatp = 100 #gain d'ATP pour manger du glucose
+cout_mitose = 300 #coût d'ATP pour se diviser
+threshold_mitose = 200 #seuil d'ATP pour se diviser
 kglucose = 0.05 #quantité de glucose consommée par les bactéries à chaque itération
 
 class Bacteria:
@@ -24,12 +24,13 @@ class Bacteria:
         self.posmaty = 0
         self.posmatx = 0
         self.ATP = 100
-        self.death_threshold = 10
-        self.death_chance = 0.5
+        self.pop_threshold = 10 #seuil de surpopulation pour la mort dans une case
+        self.death_pop_chance = 0.5 #taut de chance de mourir si la case est surpeuplée
         self.death = False
         self.Etotal = 0
         self.gradx = 0
         self.grady = 0
+        
     def Gradient(self,matrice):
         gluc_tot = np.sum(matrice)
         gradx=0
@@ -53,39 +54,38 @@ class Bacteria:
         self.posmatx = int(m_taille * self.posx)
         self.posmaty = int(m_taille * self.posy)
         self.Gradient(matrice)
-        if hypothese1:
-            newposx = self.posx + lambda1 * self.gradx
-            newposy = self.posy + lambda1 * self.grady
-        #hypothese2 : les bacteries se déplacent avec plus de chance vers le glucose mais pas forcement
-        if hypothese2:
-        #marche pas pour l'instant à réfléchir comment faire pour que ca marche
-        # composante brownienne aléatoire
-            brownx = rd.uniform(-1, 1)
-            browny = rd.uniform(-1, 1)
+        brownx = rd.uniform(-1, 1)
+        browny = rd.uniform(-1, 1)
         # ajout d’un biais vers le gradient
-            newposx = self.posx + lambda2 * brownx + lambda1 * self.gradx
-            newposy = self.posy + lambda2 * browny + lambda1 * self.grady
+        newposx = self.posx + lambda2 * brownx + lambda1 * self.gradx
+        newposy = self.posy + lambda2 * browny + lambda1 * self.grady
         #debug des murs : si la posx ou posy sort de la matrice on n'avance pas
         if 0 <= newposx <= 1 : self.posx=newposx
         if 0 <= newposy <= 1 : self.posy=newposy
         #update de la position de la bactérie dans la matrice
-        self.ATP -= kcoutatp
+        self.ATP -= cout_atp_mouvement
         
     def update_death_and_mitosis(self,matrice,list_b):
         #mort de la bactérie si il y a trop de bactéries sur la case
         nb_bacteries_case = 0
+        if self.ATP <=0:
+            self.death = True
         for bact in list_b:
             if bact.posmatx == self.posmatx and bact.posmaty == self.posmaty:
                 nb_bacteries_case += 1
-        if nb_bacteries_case >= self.death_threshold:
-            if rd.choices([True, False], [self.death_chance, 1-self.death_chance]):
+        if nb_bacteries_case >= self.pop_threshold:
+            if rd.choices([True, False], [self.death_pop_chance, 1-self.death_pop_chance]):
                 self.death = True
         #mitosis si il y a assez d'ATP et pas trop de bactéries sur la case
-        if nb_bacteries_case < self.death_threshold and self.ATP > kthresholdmitose:    
+        if nb_bacteries_case < self.pop_threshold and self.ATP > threshold_mitose:    
                 # On crée une nouvelle bactérie à une position légèrement différente
-                new_bacteria = Bacteria(self.posx,self.posy)
-                self.ATP -= kcoutatp
-                return new_bacteria
+                dif_de_pos = 0.001
+                newposx = self.posx + rd.uniform(-dif_de_pos, dif_de_pos)
+                newposy = self.posy + rd.uniform(-dif_de_pos, dif_de_pos)
+                if 0<newposx<1 and 0<newposy<1:
+                    new_bacteria = Bacteria(newposx,newposy)
+                    self.ATP -= cout_mitose
+                    return new_bacteria
             
     def update_eat(self, matrice):
         # On mange le glucose de la case de la matrice
