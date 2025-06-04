@@ -14,7 +14,7 @@ kcoutatp = 20 #coût d'ATP pour se déplacer
 kgainatp = 38 #gain d'ATP pour manger du glucose
 kcoutmitose = 120 #coût d'ATP pour se diviser
 kthresholdmitose = 200 #seuil d'ATP pour se diviser
-kglucose = 0.1 #quantité de glucose consommée par les bactéries à chaque itération
+kglucose = 0.05 #quantité de glucose consommée par les bactéries à chaque itération
 
 class Bacteria:
     def __init__(self, b_posx,b_posy):

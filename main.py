@@ -25,14 +25,14 @@ sc = ax.scatter(x_bact, y_bact, c='white', s=10)  # points blancs pour les bact�
 # Fonction d'animation = boucle principale
 def update(frame):
     global mat
-    steps_per_frame = 5  # vitesse de l'animation
+    steps_per_frame = 1  # vitesse de l'animation
     for _ in range(steps_per_frame):
         iteration = frame * steps_per_frame + _
         print(iteration)
         if iteration < 20: # Ajout de glucose au début de la simulation jusqqquaa n simulaation
                 #mat = sucre_input(mat, (m_taille // 2, m_taille // 2), 0.1, 1)
-                mat = sucre_input(mat, (12, 10), 0.1, 1)
-                mat = sucre_input(mat, (20, 22), 0.5, 1)
+                mat = sucre_input(mat, (12, 10), 0.5, 1)
+                mat = sucre_input(mat, (20, 22), 1, 1)
         if iteration < 10000: # Loi de flick = repartition du glucose jusqu'à n frames
                 mat = update_sucre(mat)
         #les bacteries existe a partir de ce moment
