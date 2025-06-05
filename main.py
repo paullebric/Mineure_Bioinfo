@@ -15,10 +15,11 @@ DUREE_DIFFUSION = 10000        # Jusqu'à quand on diffuse le sucre
 DEBUT_BACTERIES = 1            # Quand les bactéries commencent à agir
 MAX_ITER = 1000                # Pour un test rapide (change selon besoin)
 SUCRE_POS = (M_TAILLE//2, M_TAILLE//2)              # Position d'injection de sucre
-SUCRE_CONCENTRATION = 0.3       # Concentration injectée
+SUCRE_CONCENTRATION = 1       # Concentration injectée
 SUCRE_RAYON = 1                 # Rayon de diffusion du sucre
 BACTERIE_COLOR = 'white'
 BACTERIE_SIZE = 10
+VITESSE_DIFFUSTION_SUCRE = 3  # Vitesse de diffusion du sucre
 
 # ===================== INITIALISATION =====================
 mat = init_matrice(M_TAILLE)
@@ -46,7 +47,8 @@ def update(frame):
 
         # --- Diffusion (loi de Fick) ---
         if iteration < DUREE_DIFFUSION:
-            mat = update_sucre(mat)
+            for i in range(VITESSE_DIFFUSTION_SUCRE):
+                mat = update_sucre(mat)
 
         # --- Bactéries (après un certain temps) ---
         if iteration > DEBUT_BACTERIES:
@@ -56,6 +58,7 @@ def update(frame):
                     list_b.remove(bacterie)
                     continue
                 bacterie.update_b_pos(mat)
+                bacterie.update_state(mat)
                 new_bact = bacterie.update_death_and_mitosis(mat, list_b)
                 if isinstance(new_bact, Bacteria):
                     new_bacts.append(new_bact)
@@ -70,7 +73,8 @@ def update(frame):
 
     # --- Affichage console ---
     print(len(list_b), "bactéries vivantes")
-
+    print("Nb bact fermentation :", len([b for b in list_b if b.consommation_state == 'fermentation']))
+    print("Nb bact respiration :", len([b for b in list_b if b.consommation_state == 'respiration']))
     if iteration == MAX_ITER:
         print("Fin de la simulation.")
         exit()

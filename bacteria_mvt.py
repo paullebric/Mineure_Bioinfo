@@ -7,18 +7,24 @@ import numpy as np
 import random as rd
 
 # ===================== PARAMÈTRES GLOBAUX =====================
-VISION = 5                     # Distance de vision des bactéries
-LAMBDA_GRADIENT = 0.01         # Force du déplacement vers le gradient
+VISION = 3                     # Distance de vision des bactéries ATTENTION METTRE QUE DES CHIFFRES IMPAIRS
+LAMBDA_GRADIENT = 0.01          # Force du déplacement vers le gradient
 LAMBDA_RANDOM = 0              # Intensité du mouvement brownien (aléatoire)
-USE_GRADIENT = True            # Hypothèse 1 : déplacement selon gradient
-USE_RANDOM = not USE_GRADIENT  # Hypothèse alternative
+USE_GRADIENT = True             # Hypothèse 1 : déplacement selon gradient
+USE_RANDOM = not USE_GRADIENT   # Hypothèse alternative
 
-ATP_COST_MOVE = 10             # Coût d'ATP pour un déplacement
-ATP_GAIN_EAT = 100             # Gain d'ATP en consommant du glucose
-ATP_COST_MITOSIS = 300         # Coût d'ATP pour une division
-ATP_THRESHOLD_MITOSIS = 200    # Seuil d'ATP pour se diviser
-GLUCOSE_CONSUMPTION = 0.05     # Quantité de glucose consommée par itération
+ATP_COST_MOVE = 10              # Coût d'ATP pour un déplacement
+ATP_COST_MITOSIS = 300          # Coût d'ATP pour une division
+ATP_THRESHOLD_MITOSIS = 200     # Seuil d'ATP pour se diviser
 
+GLUCOSE_THRESHOLD_RESPIRATION = 0.1 # Seuil de glucose pour passer en respiration
+
+MOLECULE_GLUC = 0.001
+GLUCOSE_CONSUMPTION = 0.05      # Quantité de glucose consommée par itération
+NB_MOLECULES_CONSOMMEES = GLUCOSE_CONSUMPTION/MOLECULE_GLUC
+COEFF_CONSUMPTION_STATE = 30    # Coefficient pour la consommation de glucose en fonction de l'état
+ATP_GAIN_EAT_FERMENTATION = 2 * NB_MOLECULES_CONSOMMEES  * COEFF_CONSUMPTION_STATE# Gain d'ATP en consommant du glucose
+ATP_GAIN_EAT_RESPIRATION = 38 * NB_MOLECULES_CONSOMMEES  # Gain d'ATP en consommant du glucose en respiration
 # ===================== CLASSE BACTERIA =====================
 class Bacteria:
     def __init__(self, b_posx, b_posy):
@@ -36,7 +42,7 @@ class Bacteria:
         self.grady = 0
         self.gradnumx = 0
         self.gradnumy = 0
-
+        self.consommation_state = 'respiration'  # État de la bactérie
     # ===== Gradient perçu par la bactérie =====
     def Gradient(self, matrice):
         gluc_tot = np.sum(matrice)
@@ -44,7 +50,7 @@ class Bacteria:
 
         for i in range(self.posmaty - VISION, self.posmaty + VISION):
             for j in range(self.posmatx - VISION, self.posmatx + VISION):
-                if 0 < i < matrice.shape[0] and 0 < j < matrice.shape[1]:
+                if 0 <= i < matrice.shape[0] and 0 <= j < matrice.shape[1]:
                     dx = j - self.posmatx
                     dy = i - self.posmaty
                     dist = (dx**2 + dy**2)**0.5
@@ -105,7 +111,21 @@ class Bacteria:
 
     # ===== Consommation de glucose =====
     def update_eat(self, matrice):
-        if matrice[self.posmaty][self.posmatx] > 3 * GLUCOSE_CONSUMPTION:
-            matrice[self.posmaty][self.posmatx] -= GLUCOSE_CONSUMPTION
-            self.ATP += ATP_GAIN_EAT
+        if self.consommation_state == 'fermentation':    
+            GLUCOSE_CONSUMPTION = COEFF_CONSUMPTION_STATE * GLUCOSE_CONSUMPTION
+            if matrice[self.posmaty][self.posmatx] > 3 * GLUCOSE_CONSUMPTION:
+                matrice[self.posmaty][self.posmatx] -= GLUCOSE_CONSUMPTION
+                self.ATP += ATP_GAIN_EAT_FERMENTATION
+        elif self.consommation_state == "respiration":
+            if matrice[self.posmaty][self.posmatx] > 3 * GLUCOSE_CONSUMPTION:
+                matrice[self.posmaty][self.posmatx] -= GLUCOSE_CONSUMPTION
+                self.ATP += ATP_GAIN_EAT_RESPIRATION
         return matrice
+
+    def update_state(self, matrice):
+        moyenne_glucose = np.mean(matrice[self.posmaty - VISION:self.posmaty + VISION,
+                                        self.posmatx - VISION:self.posmatx + VISION])
+        if moyenne_glucose > GLUCOSE_THRESHOLD_RESPIRATION:
+            self.consommation_state = 'fermentation'
+        else:
+            self.consommation_state = 'respiration'
