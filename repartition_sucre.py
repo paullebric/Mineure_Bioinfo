@@ -8,9 +8,9 @@ import matplotlib.animation as animation
 import random
 
 
-def init_matrice(taille):
+def init_matrice(taille,sucre_base):
     #Initialise une matrice de taille donnée avec des zeroes.
-    return np.zeros((taille, taille))
+    return np.full((taille, taille), float(sucre_base))
 
 
 #permet de mettre du sucre a un endroit donné de la matrice pour un certain amount et une certaine area

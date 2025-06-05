@@ -8,16 +8,16 @@ from graph import *
 #from Energie_bact import *
 
 # ===================== PARAMÈTRES =====================
-M_TAILLE = 31                     # Taille de la matrice
+SUCRE_BASE = 0 # Concentration de sucre de base dans la matrice
+M_TAILLE = 20                     # Taille de la matrice
 NB_BACTERIES_INIT = 10       # Nombre de bactéries au début
-ADD_GLUCOSE_INTERVAL = 10       # (non utilisé ici, mais prévu)
-DUREE_GLUCOSE = 20        # Jusqu'à quand on ajoute du sucre
+DUREE_GLUCOSE = 2000000        # Jusqu'à quand on ajoute du sucre
 DUREE_DIFFUSION = 10000        # Jusqu'à quand on diffuse le sucre
 DEBUT_BACTERIES = 1            # Quand les bactéries commencent à agir
-MAX_ITER = 100                # Pour un test rapide (change selon besoin)
+MAX_ITER = 100              # Pour un test rapide (change selon besoin)
 SUCRE_POS = (M_TAILLE//2, M_TAILLE//2)              # Position d'injection de sucre
-SUCRE_CONCENTRATION = 0.1      # Concentration injectée
-SUCRE_RAYON = 1                # Rayon de diffusion du sucre
+SUCRE_CONCENTRATION = 0.05     # Concentration injectée
+SUCRE_RAYON = 10                # Rayon de diffusion du sucre
 BACTERIE_COLOR = 'white'
 BACTERIE_SIZE = 10
 VITESSE_DIFFUSTION_SUCRE = 3  # Vitesse de diffusion du sucre
@@ -28,9 +28,10 @@ EAT = True  # Si True, les bactéries peuvent manger
 STATE = True  # Si True, les bactéries changent d'état de consommation
 MOOVE = True
 # ===================== INITIALISATION =====================
-mat = init_matrice(M_TAILLE)
-list_b = [Bacteria(rd.uniform(0, 1), rd.uniform(0, 1)) for _ in range(NB_BACTERIES_INIT)]
+mat = init_matrice(M_TAILLE, SUCRE_BASE)
 
+list_b = [Bacteria(rd.uniform(0, 1), rd.uniform(0, 1)) for _ in range(NB_BACTERIES_INIT)]
+list_b = [Bacteria(M_TAILLE//2/M_TAILLE, M_TAILLE//2/M_TAILLE) for _ in range(NB_BACTERIES_INIT)]
 # Setup animation
 fig, ax = plt.subplots()
 im = ax.imshow(mat, cmap='turbo', vmin=0, vmax=1, extent=[0, M_TAILLE, 0, M_TAILLE], origin='lower')
@@ -43,6 +44,7 @@ sc = ax.scatter(x_bact, y_bact, c=BACTERIE_COLOR, s=BACTERIE_SIZE)
 bact_counts = []  # Pour stocker le nombre de bactéries à chaque itération
 bact_counts_respi = []  # Pour les bactéries en respiration
 bact_counts_ferment = []  # Pour les bactéries en fermentation
+gluc_sum = []
 # ===================== FONCTION D'ANIMATION =====================
 def update(frame):
     global mat, list_b
@@ -54,11 +56,13 @@ def update(frame):
         if iteration < DUREE_GLUCOSE:
             mat = sucre_input(mat, SUCRE_POS, SUCRE_CONCENTRATION, SUCRE_RAYON)
 
+        
         # --- Diffusion (loi de Fick) ---
         if iteration < DUREE_DIFFUSION:
             for i in range(VITESSE_DIFFUSTION_SUCRE):
                 mat = update_sucre(mat)
 
+        
         # --- Bactéries (après un certain temps) ---
         if iteration > DEBUT_BACTERIES:
             new_bacts = []
@@ -88,17 +92,19 @@ def update(frame):
     im.set_array(mat)
 
     # --- Affichage console ---
-    print(len(list_b), "bactéries vivantes")
-    print("Nb bact fermentation :", len([b for b in list_b if b.consommation_state == 'fermentation']))
-    print("Nb bact respiration :", len([b for b in list_b if b.consommation_state == 'respiration']))
+    
+    
     bact_counts.append(len(list_b))
     bact_counts_respi.append(len([b for b in list_b if b.consommation_state == 'respiration']))
     bact_counts_ferment.append(len([b for b in list_b if b.consommation_state == 'fermentation']))
-    if iteration == MAX_ITER or len(list_b) == 0:
-        print("Fin de la simulation.")
+    gluc_sum.append(np.sum(mat))
+
+    if iteration > MAX_ITER:
+
+        ani.event_source.stop()
         afficher_croissance_bact(bact_counts)
-        #afficher_croissance_bact_by_state(bact_counts_respi,bact_counts_ferment)
-        plt.close()
+        afficher_croissance_bact_by_state(bact_counts_respi,bact_counts_ferment,gluc_sum)
+
     return [im, sc]
 
 # ===================== LANCEMENT =====================

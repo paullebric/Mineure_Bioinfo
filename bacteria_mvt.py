@@ -7,21 +7,23 @@ import numpy as np
 import random as rd
 
 # ===================== PARAMÈTRES GLOBAUX =====================
-VISION = 3        # Distance de vision des bactéries ATTENTION METTRE QUE DES CHIFFRES IMPAIRS
+VISION = 7        # Distance de vision des bactéries ATTENTION METTRE QUE DES CHIFFRES IMPAIRS
 LAMBDA_GRADIENT = 0.01          # Force du déplacement vers le gradient
-LAMBDA_RANDOM = 0.025           # Intensité du mouvement brownien (aléatoire)
+LAMBDA_RANDOM = 0.04           # Intensité du mouvement brownien (aléatoire)
 USE_GRADIENT = True             # Hypothèse 1 : déplacement selon gradient
 USE_RANDOM = not USE_GRADIENT   # Hypothèse alternative
+
+NOMBRE_LIMITE_MITOSE = 5  # Nombre limite de mitoses pour une bactérie
 
 ATP_COST_MOVE = 10              # Coût d'ATP pour un déplacement
 ATP_COST_MITOSIS = 300          # Coût d'ATP pour une division
 ATP_THRESHOLD_MITOSIS = 200    # Seuil d'ATP pour se diviser
 MITOSE_CHANCE = 0.25 # Proba de se diviser si conditions remplies
 
-GLUCOSE_THRESHOLD_FERMENTATION = 0.3 # Seuil de glucose pour passer en respiration
+GLUCOSE_THRESHOLD_FERMENTATION = 0.15 # Seuil de glucose pour passer en respiration
 
 MOLECULE_GLUC = 0.001
-GLUCOSE_CONSUMPTION = 0.005     # Quantité de glucose consommée par itération
+GLUCOSE_CONSUMPTION = 0.00125     # Quantité de glucose consommée par itération
 NB_MOLECULES_CONSOMMEES = GLUCOSE_CONSUMPTION/MOLECULE_GLUC
 COEFF_CONSUMPTION_STATE = 30    # Coefficient pour la consommation de glucose en fonction de l'état
 ATP_GAIN_EAT_FERMENTATION = 2 * NB_MOLECULES_CONSOMMEES  * COEFF_CONSUMPTION_STATE# Gain d'ATP en consommant du glucose
@@ -45,6 +47,7 @@ class Bacteria:
         self.gradnumx = 0
         self.gradnumy = 0
         self.consommation_state = 'respiration'  # État de la bactérie
+        self.mitose_count = 0  # Compteur de mitoses
     # ===== Gradient perçu par la bactérie =====
     def Gradient(self, matrice):
         gluc_tot = np.sum(matrice)
@@ -53,8 +56,8 @@ class Bacteria:
         for i in range(self.posmaty - VISION, self.posmaty + VISION+1):
             for j in range(self.posmatx - VISION, self.posmatx + VISION+1):
                 if 0 <= i < matrice.shape[0] and 0 <= j < matrice.shape[1]:
-                    dx = j - self.posmatx
-                    dy = i - self.posmaty
+                    dx = j - self.posx * matrice.shape[1]
+                    dy = i - self.posy * matrice.shape[0]
                     dist = (dx**2 + dy**2)**0.5
                     if dist != 0:
                         coeff = matrice[i][j] / gluc_tot / dist**3
@@ -88,8 +91,12 @@ class Bacteria:
 
     # ===== Mort et mitose =====
     def update_death_and_mitosis(self, matrice, list_b):
-        if self.ATP <= 0:
+
+        if self.ATP <= 0 or self.mitose_count >= NOMBRE_LIMITE_MITOSE:
             self.death = True
+            print("bactérie morte")
+            print(self.ATP)
+            print(self.mitose_count)
             return
 
         # Compte les bactéries dans la même case
@@ -110,7 +117,11 @@ class Bacteria:
                 newy = self.posy + rd.uniform(-dif, dif)
                 if 0 < newx < 1 and 0 < newy < 1:
                     self.ATP -= ATP_COST_MITOSIS
-                    return Bacteria(newx, newy)
+                    self.mitose_count += 1
+                    new_bact = Bacteria(newx, newy)
+                    new_bact.consommation_state = self.consommation_state
+                    
+                    return new_bact
 
     # ===== Consommation de glucose =====
     def update_eat(self, matrice,GLUCOSE_CONSUMPTION=GLUCOSE_CONSUMPTION):
@@ -126,9 +137,16 @@ class Bacteria:
         return matrice
 
     def update_state(self, matrice):
-        moyenne_glucose = np.mean(matrice[self.posmaty - VISION:self.posmaty + VISION,
-                                        self.posmatx - VISION:self.posmatx + VISION])
+        n_case = 0
+        sum_gluc = 0
+        for a in range(self.posmaty - VISION, self.posmaty + VISION+1):
+            for b in range(self.posmatx - VISION, self.posmatx + VISION+1):
+                if 0 <= a < matrice.shape[0] and 0 <= b < matrice.shape[1]:
+                        sum_gluc+= matrice[a][b]
+                        n_case+=1
+        moyenne_glucose = sum_gluc / n_case if n_case > 0 else 0
         if moyenne_glucose > GLUCOSE_THRESHOLD_FERMENTATION:
             self.consommation_state = 'fermentation'
         else:
             self.consommation_state = 'respiration'
+            
