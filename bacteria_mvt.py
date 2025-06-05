@@ -9,7 +9,7 @@ import random as rd
 # ===================== PARAMÈTRES GLOBAUX =====================
 VISION = 3        # Distance de vision des bactéries ATTENTION METTRE QUE DES CHIFFRES IMPAIRS
 LAMBDA_GRADIENT = 0.01          # Force du déplacement vers le gradient
-LAMBDA_RANDOM = 0.005           # Intensité du mouvement brownien (aléatoire)
+LAMBDA_RANDOM = 0.025           # Intensité du mouvement brownien (aléatoire)
 USE_GRADIENT = True             # Hypothèse 1 : déplacement selon gradient
 USE_RANDOM = not USE_GRADIENT   # Hypothèse alternative
 
@@ -50,8 +50,8 @@ class Bacteria:
         gluc_tot = np.sum(matrice)
         gradx = grady = 0
 
-        for i in range(self.posmaty - VISION, self.posmaty + VISION):
-            for j in range(self.posmatx - VISION, self.posmatx + VISION):
+        for i in range(self.posmaty - VISION, self.posmaty + VISION+1):
+            for j in range(self.posmatx - VISION, self.posmatx + VISION+1):
                 if 0 <= i < matrice.shape[0] and 0 <= j < matrice.shape[1]:
                     dx = j - self.posmatx
                     dy = i - self.posmaty
