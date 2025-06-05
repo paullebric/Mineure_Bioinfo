@@ -11,7 +11,7 @@ from graph import *
 SUCRE_BASE = 0 # Concentration de sucre de base dans la matrice
 M_TAILLE = 20                     # Taille de la matrice
 NB_BACTERIES_INIT = 10       # Nombre de bactéries au début
-DUREE_GLUCOSE = 2000000        # Jusqu'à quand on ajoute du sucre
+DUREE_GLUCOSE = 25        # Jusqu'à quand on ajoute du sucre
 DUREE_DIFFUSION = 10000        # Jusqu'à quand on diffuse le sucre
 DEBUT_BACTERIES = 1            # Quand les bactéries commencent à agir
 MAX_ITER = 100              # Pour un test rapide (change selon besoin)
