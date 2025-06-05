@@ -3,20 +3,20 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import random as rd
 from repartition_sucre import *
-from bacteria_mvt import Bacteria
-from Energie_bact import *
+from bacteria_mvt import GLUCOSE_CONSUMPTION,Bacteria
+#from Energie_bact import *
 
 # ===================== PARAMÈTRES =====================
-M_TAILLE = 50                     # Taille de la matrice
-NB_BACTERIES_INIT = 100         # Nombre de bactéries au début
+M_TAILLE = 20                     # Taille de la matrice
+NB_BACTERIES_INIT = 1       # Nombre de bactéries au début
 ADD_GLUCOSE_INTERVAL = 10       # (non utilisé ici, mais prévu)
-DUREE_GLUCOSE = 200000         # Jusqu'à quand on ajoute du sucre
+DUREE_GLUCOSE = 20        # Jusqu'à quand on ajoute du sucre
 DUREE_DIFFUSION = 10000        # Jusqu'à quand on diffuse le sucre
 DEBUT_BACTERIES = 1            # Quand les bactéries commencent à agir
 MAX_ITER = 1000                # Pour un test rapide (change selon besoin)
 SUCRE_POS = (M_TAILLE//2, M_TAILLE//2)              # Position d'injection de sucre
-SUCRE_CONCENTRATION = 1       # Concentration injectée
-SUCRE_RAYON = 1                 # Rayon de diffusion du sucre
+SUCRE_CONCENTRATION = 0.04      # Concentration injectée
+SUCRE_RAYON = M_TAILLE//2                 # Rayon de diffusion du sucre
 BACTERIE_COLOR = 'white'
 BACTERIE_SIZE = 10
 VITESSE_DIFFUSTION_SUCRE = 3  # Vitesse de diffusion du sucre
@@ -62,13 +62,15 @@ def update(frame):
                 new_bact = bacterie.update_death_and_mitosis(mat, list_b)
                 if isinstance(new_bact, Bacteria):
                     new_bacts.append(new_bact)
-                mat = bacterie.update_eat(mat)
+                mat = bacterie.update_eat(mat,GLUCOSE_CONSUMPTION)
             list_b.extend(new_bacts)
 
     # --- Affichage / mise à jour graphique ---
     x_bact = [b.posx * M_TAILLE for b in list_b]
     y_bact = [b.posy * M_TAILLE for b in list_b]
+    colors = ['violet' if b.consommation_state == 'fermentation' else 'white' for b in list_b]
     sc.set_offsets(np.c_[x_bact, y_bact])
+    sc.set_color(colors)
     im.set_array(mat)
 
     # --- Affichage console ---

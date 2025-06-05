@@ -7,24 +7,26 @@ import numpy as np
 import random as rd
 
 # ===================== PARAMÈTRES GLOBAUX =====================
-VISION = 3                     # Distance de vision des bactéries ATTENTION METTRE QUE DES CHIFFRES IMPAIRS
+VISION = 3        # Distance de vision des bactéries ATTENTION METTRE QUE DES CHIFFRES IMPAIRS
 LAMBDA_GRADIENT = 0.01          # Force du déplacement vers le gradient
-LAMBDA_RANDOM = 0              # Intensité du mouvement brownien (aléatoire)
+LAMBDA_RANDOM = 0.005           # Intensité du mouvement brownien (aléatoire)
 USE_GRADIENT = True             # Hypothèse 1 : déplacement selon gradient
 USE_RANDOM = not USE_GRADIENT   # Hypothèse alternative
 
 ATP_COST_MOVE = 10              # Coût d'ATP pour un déplacement
 ATP_COST_MITOSIS = 300          # Coût d'ATP pour une division
-ATP_THRESHOLD_MITOSIS = 200     # Seuil d'ATP pour se diviser
+ATP_THRESHOLD_MITOSIS = 200    # Seuil d'ATP pour se diviser
+MITOSE_CHANCE = 0.25 # Proba de se diviser si conditions remplies
 
-GLUCOSE_THRESHOLD_RESPIRATION = 0.1 # Seuil de glucose pour passer en respiration
+GLUCOSE_THRESHOLD_FERMENTATION = 0.3 # Seuil de glucose pour passer en respiration
 
 MOLECULE_GLUC = 0.001
-GLUCOSE_CONSUMPTION = 0.05      # Quantité de glucose consommée par itération
+GLUCOSE_CONSUMPTION = 0.005     # Quantité de glucose consommée par itération
 NB_MOLECULES_CONSOMMEES = GLUCOSE_CONSUMPTION/MOLECULE_GLUC
 COEFF_CONSUMPTION_STATE = 30    # Coefficient pour la consommation de glucose en fonction de l'état
 ATP_GAIN_EAT_FERMENTATION = 2 * NB_MOLECULES_CONSOMMEES  * COEFF_CONSUMPTION_STATE# Gain d'ATP en consommant du glucose
 ATP_GAIN_EAT_RESPIRATION = 38 * NB_MOLECULES_CONSOMMEES  # Gain d'ATP en consommant du glucose en respiration
+
 # ===================== CLASSE BACTERIA =====================
 class Bacteria:
     def __init__(self, b_posx, b_posy):
@@ -102,19 +104,20 @@ class Bacteria:
 
         # Mitose
         if nb_same_cell < self.pop_threshold and self.ATP > ATP_THRESHOLD_MITOSIS:
-            dif = 0.001
-            newx = self.posx + rd.uniform(-dif, dif)
-            newy = self.posy + rd.uniform(-dif, dif)
-            if 0 < newx < 1 and 0 < newy < 1:
-                self.ATP -= ATP_COST_MITOSIS
-                return Bacteria(newx, newy)
+            if rd.random() < MITOSE_CHANCE:
+                dif = 0.001
+                newx = self.posx + rd.uniform(-dif, dif)
+                newy = self.posy + rd.uniform(-dif, dif)
+                if 0 < newx < 1 and 0 < newy < 1:
+                    self.ATP -= ATP_COST_MITOSIS
+                    return Bacteria(newx, newy)
 
     # ===== Consommation de glucose =====
-    def update_eat(self, matrice):
+    def update_eat(self, matrice,GLUCOSE_CONSUMPTION=GLUCOSE_CONSUMPTION):
         if self.consommation_state == 'fermentation':    
-            GLUCOSE_CONSUMPTION = COEFF_CONSUMPTION_STATE * GLUCOSE_CONSUMPTION
-            if matrice[self.posmaty][self.posmatx] > 3 * GLUCOSE_CONSUMPTION:
-                matrice[self.posmaty][self.posmatx] -= GLUCOSE_CONSUMPTION
+            ferment_GLUCOSE_CONSUMPTION = COEFF_CONSUMPTION_STATE * GLUCOSE_CONSUMPTION
+            if matrice[self.posmaty][self.posmatx] > 3 * ferment_GLUCOSE_CONSUMPTION:
+                matrice[self.posmaty][self.posmatx] -= ferment_GLUCOSE_CONSUMPTION
                 self.ATP += ATP_GAIN_EAT_FERMENTATION
         elif self.consommation_state == "respiration":
             if matrice[self.posmaty][self.posmatx] > 3 * GLUCOSE_CONSUMPTION:
@@ -125,7 +128,7 @@ class Bacteria:
     def update_state(self, matrice):
         moyenne_glucose = np.mean(matrice[self.posmaty - VISION:self.posmaty + VISION,
                                         self.posmatx - VISION:self.posmatx + VISION])
-        if moyenne_glucose > GLUCOSE_THRESHOLD_RESPIRATION:
+        if moyenne_glucose > GLUCOSE_THRESHOLD_FERMENTATION:
             self.consommation_state = 'fermentation'
         else:
             self.consommation_state = 'respiration'
