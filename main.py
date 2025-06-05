@@ -27,7 +27,7 @@ def update(frame):
     global mat
     steps_per_frame = 1  # vitesse de l'animation
     for _ in range(steps_per_frame):
-        gradglobal(list_b, mat)  # Mise à jour du gradient global pour chaque bactérie
+        #gradglobal(list_b, mat)  # Mise à jour du gradient global pour chaque bactérie
         iteration = frame * steps_per_frame + _
         if iteration < 200000: # Ajout de glucose au début de la simulation jusqqquaa n simulaation
                 mat = sucre_input(mat, (0, 0), 0.3, 1)
@@ -51,7 +51,7 @@ def update(frame):
     print(len(list_b), "bactéries vivantes")
     for bact in list_b:
         print(bact.gradnumx, bact.gradnumy)
-    if iteration == 2:exit()
+    if iteration == 1000:print("fin"),exit()
     im.set_array(mat)
     # Mise à jour des positions des bactéries
     x_bact = [b.posx * m_taille for b in list_b]

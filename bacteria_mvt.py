@@ -59,8 +59,8 @@ class Bacteria:
         brownx = rd.uniform(-1, 1)
         browny = rd.uniform(-1, 1)
         # ajout d’un biais vers le gradient
-        newposx = self.posx + lambda2 * brownx + lambda1 * self.gradnumx
-        newposy = self.posy + lambda2 * browny + lambda1 * self.gradnumy
+        newposx = self.posx + lambda2 * brownx + lambda1 * self.gradx
+        newposy = self.posy + lambda2 * browny + lambda1 * self.grady
         #debug des murs : si la posx ou posy sort de la matrice on n'avance pas
         if 0 <= newposx <= 1 : self.posx=newposx
         if 0 <= newposy <= 1 : self.posy=newposy
