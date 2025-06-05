@@ -16,7 +16,7 @@ DUREE_DIFFUSION = 10000        # Jusqu'à quand on diffuse le sucre
 DEBUT_BACTERIES = 1            # Quand les bactéries commencent à agir
 MAX_ITER = 100                # Pour un test rapide (change selon besoin)
 SUCRE_POS = (M_TAILLE//2, M_TAILLE//2)              # Position d'injection de sucre
-SUCRE_CONCENTRATION = 0.5      # Concentration injectée
+SUCRE_CONCENTRATION = 0.1      # Concentration injectée
 SUCRE_RAYON = 1                # Rayon de diffusion du sucre
 BACTERIE_COLOR = 'white'
 BACTERIE_SIZE = 10
@@ -97,7 +97,7 @@ def update(frame):
     if iteration == MAX_ITER or len(list_b) == 0:
         print("Fin de la simulation.")
         afficher_croissance_bact(bact_counts)
-        afficher_croissance_bact_by_state(bact_counts_respi,bact_counts_ferment)
+        #afficher_croissance_bact_by_state(bact_counts_respi,bact_counts_ferment)
 
     return [im, sc]
 
