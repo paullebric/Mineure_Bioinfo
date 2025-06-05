@@ -98,7 +98,7 @@ def update(frame):
         print("Fin de la simulation.")
         afficher_croissance_bact(bact_counts)
         #afficher_croissance_bact_by_state(bact_counts_respi,bact_counts_ferment)
-
+        plt.close()
     return [im, sc]
 
 # ===================== LANCEMENT =====================
