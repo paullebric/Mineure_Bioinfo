@@ -1,5 +1,5 @@
 """
-Ce script simule la diffusion de sucre dans une matrice 2D. Avec un flux modulable de glucose.
+Ce script simule la diffusion de sucre dans une matrice_sucre 2D. Avec un flux modulable de glucose.
 """
 
 import numpy as np
@@ -8,12 +8,12 @@ import matplotlib.animation as animation
 import random
 
 
-def init_matrice(taille,sucre_base):
-    #Initialise une matrice de taille donnée avec des zeroes.
+def init_matrice_sucre(taille,sucre_base):
+    #Initialise une matrice_sucre de taille donnée avec des zeroes.
     return np.full((taille, taille), float(sucre_base))
 
 
-#permet de mettre du sucre a un endroit donné de la matrice pour un certain amount et une certaine area
+#permet de mettre du sucre a un endroit donné de la matrice_sucre pour un certain amount et une certaine area
 def sucre_input(mat,position,amount,area):
     x=position[0]
     y=position[1]
@@ -25,15 +25,15 @@ def sucre_input(mat,position,amount,area):
                 mat[i][j]+=amount
     return mat
 
-#permet d'afficher la matrice avec une échelle de couleur grace à mathplotlib
-def afficher_matrice(mat, titre=""):
+#permet d'afficher la matrice_sucre avec une échelle de couleur grace à mathplotlib
+def afficher_matrice_sucre(mat, titre=""):
     plt.imshow(mat, cmap='YlOrRd', vmin=0, vmax=1)
     plt.colorbar(label='Concentration de sucre')
     plt.title(titre)
     plt.axis('off')  # cache les axes
     plt.show()
 
-#update la matrice de sucre en le diffusant dans les cases voisines en fonction du gradient de concentration
+#update la matrice_sucre de sucre en le diffusant dans les cases voisines en fonction du gradient de concentration
 def update_sucre(old_mat):
     new_mat = np.copy(old_mat)
     D = 0.1  # coefficient de diffusion
@@ -49,7 +49,7 @@ def update_sucre(old_mat):
                     new_mat[ni][nj] -= flux  # Conservation de la masse
     # Clamping entre 0 et 1 pour éviter les valeurs absurdes
     new_mat = np.clip(new_mat, 0, 1)
-    # Arrondie la matrice avec 4 décimale
+    # Arrondie la matrice_sucre avec 4 décimale
     new_mat = np.round(new_mat,4)
     return new_mat
 
@@ -58,9 +58,9 @@ def update_sucre(old_mat):
 
 def generate_gaussian_matrix(size, fwhm=3, amplitude=1):
     """
-    Crée une matrice 2D avec une distribution gaussienne centrée.
+    Crée une matrice_sucre 2D avec une distribution gaussienne centrée.
     
-    - size : taille de la matrice (carrée)
+    - size : taille de la matrice_sucre (carrée)
     - fwhm : largeur à mi-hauteur (Full Width Half Maximum)
     - amplitude : hauteur du pic
     """
@@ -83,7 +83,7 @@ mat = generate_gaussian_matrix(size, fwhm, amplitude)
 
 plt.imshow(mat, cmap='viridis', origin='lower')
 plt.colorbar(label="Intensité gaussienne")
-plt.title("Distribution gaussienne centrée dans une matrice")
+plt.title("Distribution gaussienne centrée dans une matrice_sucre")
 plt.show()
 
 """
