@@ -7,11 +7,9 @@ import numpy as np
 import random as rd
 
 # ===================== PARAMÈTRES GLOBAUX =====================
-VISION = 7        # Distance de vision des bactéries ATTENTION METTRE QUE DES CHIFFRES IMPAIRS
-LAMBDA_GRADIENT = 0.01          # Force du déplacement vers le gradient
-LAMBDA_RANDOM = 0.04           # Intensité du mouvement brownien (aléatoire)
-USE_GRADIENT = True             # Hypothèse 1 : déplacement selon gradient
-USE_RANDOM = not USE_GRADIENT   # Hypothèse alternative
+VISION = 3        # Distance de vision des bactéries ATTENTION METTRE QUE DES CHIFFRES IMPAIRS
+LAMBDA_GRADIENT = 0.04          # Force du déplacement vers le gradient
+LAMBDA_RANDOM = 0          # Intensité du mouvement brownien (aléatoire)
 
 NOMBRE_LIMITE_MITOSE = 5  # Nombre limite de mitoses pour une bactérie
 
@@ -48,6 +46,7 @@ class Bacteria:
         self.gradnumy = 0
         self.consommation_state = 'respiration'  # État de la bactérie
         self.mitose_count = 0  # Compteur de mitoses
+        self.Rij3 = 0  # Variable pour la mise à jour de la position
     # ===== Gradient perçu par la bactérie =====
     def Gradient(self, matrice):
         gluc_tot = np.sum(matrice)
@@ -56,32 +55,67 @@ class Bacteria:
         for i in range(self.posmaty - VISION, self.posmaty + VISION+1):
             for j in range(self.posmatx - VISION, self.posmatx + VISION+1):
                 if 0 <= i < matrice.shape[0] and 0 <= j < matrice.shape[1]:
-                    dx = j - self.posx * matrice.shape[1]
-                    dy = i - self.posy * matrice.shape[0]
+                    dx = (j+0.5)/ matrice.shape[1] - self.posx
+                    dy = (i+0.5)/ matrice.shape[0] - self.posy
                     dist = (dx**2 + dy**2)**0.5
                     if dist != 0:
-                        coeff = matrice[i][j] / gluc_tot / dist**3
+                        coeff = (matrice[i][j] / gluc_tot) / dist**3
                         gradx += coeff * dx
                         grady += coeff * dy
 
-        norm = (gradx**2 + grady**2)**0.5 or 1
+
+        norm = (gradx**2 + grady**2)**0.5
         self.gradx = gradx / norm
         self.grady = grady / norm
+    def update_Rij3(self, matrice):
+        for i in range(self.posmaty - VISION, self.posmaty + VISION+1):
+            for j in range(self.posmatx - VISION, self.posmatx + VISION+1):
+                if 0 <= i < matrice.shape[0] and 0 <= j < matrice.shape[1]:
+                    dx = (j+0.5)/ matrice.shape[1] - self.posx
+                    dy = (i+0.5)/ matrice.shape[0] - self.posy
+                    dist = (dx**2 + dy**2)**0.5
+                    self.Rij3 = 1/(dist**3)
+                    print("Rij3 mis à jour :", self.Rij3)
 
+    def Gradient_concerte(self, matrice, list_b):
+        gluc_tot = np.sum(matrice)
+        gradx = grady = 0
+        sum_Rij3 = 0
+        sum_Sxj2 = 0
+        sum_Syj2 = 0
+        for i in range(self.posmaty - VISION, self.posmaty + VISION + 1):
+                    for j in range(self.posmatx - VISION, self.posmatx + VISION + 1):
+                        if 0 <= i < matrice.shape[0] and 0 <= j < matrice.shape[1]:
+                            gluc_pourcentage = matrice[i][j] / gluc_tot
+                            sum_Sxj2 += gluc_pourcentage*((j + 0.5)/matrice.shape[0]-self.posx)
+                            sum_Syj2 += gluc_pourcentage*((i + 0.5)/matrice.shape[1]-self.posy)
+
+        for bact in list_b:
+                                if self.posmaty - VISION < bact.posmaty < self.posmaty + VISION + 1 and self.posmatx - VISION < bact.posmatx < self.posmatx + VISION + 1:
+                                    sum_Rij3 += bact.Rij3
+        gradx = sum_Sxj2*sum_Rij3
+        grady = sum_Syj2*sum_Rij3
+        norm = (gradx**2 + grady**2)**0.5
+        self.gradx = gradx / norm
+        self.grady = grady / norm
+        print("Gradient concerté calculé")
     # ===== Mise à jour de la position =====
-    def update_b_pos(self, matrice):
+    def update_b_pos(self, matrice, CONCERTE, list_b):
         taille = matrice.shape[0]
         self.posmatx = int(self.posx * taille)
         self.posmaty = int(self.posy * taille)
-
-        self.Gradient(matrice)
+        if CONCERTE :
+            self.Gradient_concerte(matrice, list_b)
+            print("Gradient concerté")
+        else :
+            self.Gradient(matrice)
 
         brownx = rd.uniform(-1, 1)
         browny = rd.uniform(-1, 1)
 
         newposx = self.posx + LAMBDA_RANDOM * brownx + LAMBDA_GRADIENT * self.gradx
         newposy = self.posy + LAMBDA_RANDOM * browny + LAMBDA_GRADIENT * self.grady
-
+        print("Nouvelle position :", newposx, newposy)
         if 0 <= newposx <= 1:
             self.posx = newposx
         if 0 <= newposy <= 1:
@@ -89,6 +123,7 @@ class Bacteria:
 
         self.ATP -= ATP_COST_MOVE
 
+        
     # ===== Mort et mitose =====
     def update_death_and_mitosis(self, matrice, list_b):
 

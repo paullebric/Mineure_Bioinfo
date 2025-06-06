@@ -9,29 +9,30 @@ from graph import *
 
 # ===================== PARAMÈTRES =====================
 SUCRE_BASE = 0 # Concentration de sucre de base dans la matrice
-M_TAILLE = 20                     # Taille de la matrice
-NB_BACTERIES_INIT = 10       # Nombre de bactéries au début
-DUREE_GLUCOSE = 25        # Jusqu'à quand on ajoute du sucre
-DUREE_DIFFUSION = 10000        # Jusqu'à quand on diffuse le sucre
+M_TAILLE = 50                     # Taille de la matrice
+NB_BACTERIES_INIT = 50      # Nombre de bactéries au début
+DUREE_GLUCOSE = 10        # Jusqu'à quand on ajoute du sucre
+DUREE_DIFFUSION = 15        # Jusqu'à quand on diffuse le sucre
 DEBUT_BACTERIES = 1            # Quand les bactéries commencent à agir
 MAX_ITER = 100              # Pour un test rapide (change selon besoin)
 SUCRE_POS = (M_TAILLE//2, M_TAILLE//2)              # Position d'injection de sucre
-SUCRE_CONCENTRATION = 0.05     # Concentration injectée
-SUCRE_RAYON = 10                # Rayon de diffusion du sucre
+SUCRE_CONCENTRATION = 0.5     # Concentration injectée
+SUCRE_RAYON = 1                # Rayon de diffusion du sucre
 BACTERIE_COLOR = 'white'
 BACTERIE_SIZE = 10
 VITESSE_DIFFUSTION_SUCRE = 3  # Vitesse de diffusion du sucre
 
-DEATH = True  # Si True, les bactéries peuvent mourir
-MITOSE = True  # Si True, les bactéries peuvent se diviser
+DEATH = False  # Si True, les bactéries peuvent mourir
+MITOSE = False  # Si True, les bactéries peuvent se diviser
 EAT = True  # Si True, les bactéries peuvent manger
-STATE = True  # Si True, les bactéries changent d'état de consommation
+STATE = False  # Si True, les bactéries changent d'état de consommation
 MOOVE = True
+CONCERTE = True  # Si True, les bactéries se déplacent en concerté
 # ===================== INITIALISATION =====================
 mat = init_matrice(M_TAILLE, SUCRE_BASE)
 
 list_b = [Bacteria(rd.uniform(0, 1), rd.uniform(0, 1)) for _ in range(NB_BACTERIES_INIT)]
-list_b = [Bacteria(M_TAILLE//2/M_TAILLE, M_TAILLE//2/M_TAILLE) for _ in range(NB_BACTERIES_INIT)]
+
 # Setup animation
 fig, ax = plt.subplots()
 im = ax.imshow(mat, cmap='turbo', vmin=0, vmax=1, extent=[0, M_TAILLE, 0, M_TAILLE], origin='lower')
@@ -67,11 +68,16 @@ def update(frame):
         if iteration > DEBUT_BACTERIES:
             new_bacts = []
             for bacterie in list_b[:]:  # Copie pour éviter modification pendant itération
+                
                 if DEATH :
                     if bacterie.death:
                         list_b.remove(bacterie)
                         continue
-                if MOOVE :bacterie.update_b_pos(mat)
+
+                if MOOVE : 
+                    if CONCERTE:
+                        bacterie.update_Rij3(mat)
+                    bacterie.update_b_pos(mat,CONCERTE,list_b)
                 
                 if STATE:bacterie.update_state(mat)
 
